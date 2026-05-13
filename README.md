@@ -1,8 +1,18 @@
-# Currency Tracker
+# Reaisify
 
-Currency Tracker is a production-minded React SPA and Node API for helping people decide when to move money internationally, starting with the USD/BRL corridor for a move from the United States to Brazil.
+Reaisify is a production-minded React SPA and Node API for helping people decide when to move money internationally, starting with the USD/BRL corridor for a move from the United States to Brazil.
 
 This MVP is intentionally more than a simple converter. It combines current pricing, historical context, percentile-based timing signals, and local alert rule persistence into a reusable FX dashboard architecture.
+
+## Screenshots
+
+### Desktop Dashboard
+
+![Reaisify desktop dashboard](docs/screenshots/reaisify-desktop.png)
+
+### Mobile Dashboard
+
+![Reaisify mobile dashboard](docs/screenshots/reaisify-mobile.png)
 
 ## Stack
 
