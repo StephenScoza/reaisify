@@ -19,6 +19,9 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const parsedTargetRate = Number(targetRate);
+  const canCreateAlert = parsedTargetRate > 0;
 
   const loadAlerts = async () => {
     const [alertData, deliveryData] = await Promise.all([
@@ -71,9 +74,11 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
 
     try {
       setError(null);
+      setNotice(null);
       const alert = await createAlertRule(pairSymbol, parsedRate);
       setAlerts((currentAlerts) => [alert, ...currentAlerts]);
       setTargetRate("");
+      setNotice(`Alert saved for ${pairSymbol.toUpperCase()} above ${parsedRate.toFixed(2)}.`);
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Failed to create alert.");
     }
@@ -83,8 +88,10 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
     try {
       setIsTesting(true);
       setError(null);
+      setNotice(null);
       const delivery = await sendDiscordTest(pairSymbol);
       setDeliveries((currentDeliveries) => [delivery, ...currentDeliveries].slice(0, 5));
+      setNotice("Discord test sent successfully.");
     } catch (testError) {
       setError(testError instanceof Error ? testError.message : "Failed to send Discord test.");
     } finally {
@@ -95,17 +102,19 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
   const removeAlert = async (id: string) => {
     try {
       setError(null);
+      setNotice(null);
       await deleteAlertRule(id);
       await loadAlerts();
+      setNotice("Alert rule removed.");
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Failed to delete alert.");
     }
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+    <section className="max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slatebrand">Alert Rules</p>
           <h3 className="mt-2 text-xl font-semibold text-ink">Discord opportunity alerts</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -116,7 +125,7 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
           type="button"
           onClick={() => void testDiscord()}
           disabled={isTesting}
-          className="rounded-xl border border-mint/30 bg-mint px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-xl border border-mint/30 bg-mint px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           {isTesting ? "Sending..." : "Test Discord"}
         </button>
@@ -135,11 +144,18 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
         <button
           type="button"
           onClick={() => void addAlert()}
-          className="rounded-xl bg-ink px-5 py-3 font-semibold text-white transition hover:bg-ocean"
+          disabled={!canCreateAlert}
+          className="rounded-xl bg-ink px-5 py-3 font-semibold text-white transition hover:bg-ocean disabled:cursor-not-allowed disabled:opacity-50"
         >
           Add Alert
         </button>
       </div>
+
+      {notice ? (
+        <div className="mt-4 rounded-xl border border-mint/20 bg-surf px-4 py-3 text-sm text-mint">
+          {notice}
+        </div>
+      ) : null}
 
       {error ? (
         <div className="mt-4 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
@@ -162,11 +178,11 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
               key={alert.id}
               className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-sand px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div>
+              <div className="min-w-0">
                 <div className="font-semibold text-ink">
                   Notify when {pairSymbol.toUpperCase()} exceeds {alert.targetRate.toFixed(2)}
                 </div>
-                <div className="mt-1 text-sm text-slate-500">
+                <div className="mt-1 break-words text-sm text-slate-500">
                   Last state: {alert.lastObservedState}
                   {alert.lastTriggeredAt
                     ? ` - Last sent ${new Date(alert.lastTriggeredAt).toLocaleString()}`
@@ -176,7 +192,7 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
               <button
                 type="button"
                 onClick={() => void removeAlert(alert.id)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 transition hover:border-danger/40 hover:text-danger"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 transition hover:border-danger/40 hover:text-danger sm:w-auto"
               >
                 Remove
               </button>
@@ -196,10 +212,10 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
             deliveries.map((delivery) => (
               <div key={delivery.id} className="rounded-xl border border-slate-200 bg-sand px-4 py-3">
                 <div className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
-                  <span className="font-medium text-ink">{delivery.message}</span>
-                  <span className="text-slate-500">{new Date(delivery.deliveredAt).toLocaleString()}</span>
+                  <span className="min-w-0 break-words font-medium text-ink">{delivery.message}</span>
+                  <span className="shrink-0 text-slate-500">{new Date(delivery.deliveredAt).toLocaleString()}</span>
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-[0.16em] text-mint">
+                <div className="mt-1 break-words text-xs uppercase tracking-[0.16em] text-mint">
                   {delivery.destination} - {delivery.recommendation} - {delivery.confidence}%
                 </div>
               </div>
