@@ -50,6 +50,11 @@ export interface AlertRule {
   pairSymbol: string;
   targetRate: number;
   createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  lastObservedState: "ABOVE" | "BELOW";
+  lastTriggeredAt?: string;
+  lastTriggeredRate?: number;
 }
 
 export interface FxHistory {

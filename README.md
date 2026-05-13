@@ -34,7 +34,7 @@ currency-tracker/
 - Historical chart with `7D`, `30D`, `90D`, and `1Y` ranges
 - Real-time USD to BRL conversion calculator
 - Signal engine with recommendation, confidence, reasoning, percentile, and trend direction
-- Local alert rules persisted in `localStorage`
+- Backend-managed alert rules with durable storage and Discord webhook support
 - Reusable pair-oriented architecture for future currency pairs like `usd-eur` and `usd-gbp`
 - Backend provider abstraction with Twelve Data as the primary near-real-time source
 - In-memory TTL caching for latest and historical provider responses
@@ -72,9 +72,12 @@ The backend expects the Twelve Data key in [backend/.env](C:/Users/steph/dev/cur
 ```env
 TWELVE_DATA_API_KEY=your-twelve-data-api-key
 PORT=7001
+ALERT_STORAGE_DIR=./runtime
+ALERT_POLL_INTERVAL_MS=60000
+DISCORD_WEBHOOK_URL=
 ```
 
-The API key is only used server-side and is never exposed to the frontend.
+The API key is only used server-side and is never exposed to the frontend. The Discord webhook is also backend-only.
 
 ### Local development without Docker
 
@@ -102,6 +105,12 @@ This starts:
 - Frontend on `localhost:7000`
 - Backend on `localhost:7001`
 
+Persistence in Docker:
+
+- `./backend/runtime` stores alert state and delivery logs
+- `postgres_data` persists Postgres when the future profile is enabled
+- `redis_data` persists Redis when the future profile is enabled
+
 Reserved future services can be enabled later using the `future` compose profile.
 
 ## API Endpoints
@@ -121,6 +130,25 @@ Returns historical daily points for the requested range.
 ### `GET /fx/usd-brl/signal`
 
 Returns the structured timing recommendation derived from moving averages, percentile rank, and momentum.
+
+### `GET /alerts?pairSymbol=usd-brl`
+
+Returns alert rules for a currency pair.
+
+### `POST /alerts`
+
+Creates a new alert rule.
+
+```json
+{
+  "pairSymbol": "usd-brl",
+  "targetRate": 5.4
+}
+```
+
+### `DELETE /alerts/:id`
+
+Deletes an alert rule.
 
 ## Signal Engine Logic
 
@@ -166,6 +194,14 @@ The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and 
 - Latest rate cache TTL: 60 seconds
 - Historical cache TTL: 1 hour
 
+## Alerting
+
+- Alert rules are stored in `backend/runtime/alerts.json`
+- Delivery history is appended to `backend/runtime/alert-deliveries.log`
+- The backend polls active rules on `ALERT_POLL_INTERVAL_MS`
+- Discord notifications fire when a rule crosses from below target to above target
+- If `DISCORD_WEBHOOK_URL` is unset, the backend still records the opportunity to the log file
+
 ## Mock Data Strategy
 
 Mock data is generated programmatically for 365 daily observations with:
@@ -196,9 +232,9 @@ When replacing mock data:
 2. Swap `mockHistoricalRates` for a provider adapter module.
 3. Normalize upstream payloads into the existing latest/history/signal response shapes.
 4. Add caching and rate-limit protection before calling external APIs in production.
-5. Move alert persistence from `localStorage` into Postgres once authentication exists.
+5. Move file-backed alerts into Postgres once authentication exists.
 
 ## Notes
 
-- The Discord webhook URL provided in the prompt is intentionally not wired into the MVP to avoid baking sensitive notification endpoints directly into the client or server.
+- The Discord webhook should be configured through `backend/.env` and is intentionally kept out of frontend code.
 - The frontend includes a fallback to mock data so the dashboard still renders if the backend is unavailable during UI development.

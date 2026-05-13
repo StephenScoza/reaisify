@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import { createAlertRule, deleteAlertRule, getAlertRules } from "../services/fxService";
 import type { AlertRule } from "../types/currency";
-
-const buildStorageKey = (pairSymbol: string) => `currency-tracker-alerts:${pairSymbol}`;
 
 interface AlertRuleFormProps {
   pairSymbol: string;
@@ -10,38 +9,63 @@ interface AlertRuleFormProps {
 export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
   const [targetRate, setTargetRate] = useState("");
   const [alerts, setAlerts] = useState<AlertRule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const rawValue = localStorage.getItem(buildStorageKey(pairSymbol));
-    if (rawValue) {
-      setAlerts(JSON.parse(rawValue) as AlertRule[]);
-    }
+    let isActive = true;
+
+    const loadAlerts = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const data = await getAlertRules(pairSymbol);
+        if (isActive) {
+          setAlerts(data);
+        }
+      } catch (loadError) {
+        if (isActive) {
+          setError(loadError instanceof Error ? loadError.message : "Failed to load alerts.");
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadAlerts();
+
+    return () => {
+      isActive = false;
+    };
   }, [pairSymbol]);
 
-  useEffect(() => {
-    localStorage.setItem(buildStorageKey(pairSymbol), JSON.stringify(alerts));
-  }, [alerts, pairSymbol]);
-
-  const addAlert = () => {
+  const addAlert = async () => {
     const parsedRate = Number(targetRate);
     if (!parsedRate) {
       return;
     }
 
-    setAlerts((currentAlerts) => [
-      {
-        id: crypto.randomUUID(),
-        pairSymbol,
-        targetRate: parsedRate,
-        createdAt: new Date().toISOString(),
-      },
-      ...currentAlerts,
-    ]);
-    setTargetRate("");
+    try {
+      setError(null);
+      const alert = await createAlertRule(pairSymbol, parsedRate);
+      setAlerts((currentAlerts) => [alert, ...currentAlerts]);
+      setTargetRate("");
+    } catch (createError) {
+      setError(createError instanceof Error ? createError.message : "Failed to create alert.");
+    }
   };
 
-  const removeAlert = (id: string) => {
-    setAlerts((currentAlerts) => currentAlerts.filter((alert) => alert.id !== id));
+  const removeAlert = async (id: string) => {
+    try {
+      setError(null);
+      await deleteAlertRule(id);
+      setAlerts((currentAlerts) => currentAlerts.filter((alert) => alert.id !== id));
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete alert.");
+    }
   };
 
   return (
@@ -49,7 +73,7 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
       <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Alert Rules</p>
       <h3 className="mt-2 text-xl font-semibold text-white">Save target-rate reminders</h3>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        UI-only for MVP. Alerts persist in local storage so you can model thresholds like “Notify me when USD/BRL exceeds 5.40”.
+        Alerts persist in the backend and can trigger Discord opportunity messages when USD/BRL crosses your target.
       </p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -64,15 +88,25 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
         />
         <button
           type="button"
-          onClick={addAlert}
+          onClick={() => void addAlert()}
           className="rounded-2xl bg-white px-5 py-3 font-medium text-slate-950 transition hover:bg-slate-100"
         >
           Add Alert
         </button>
       </div>
 
+      {error ? (
+        <div className="mt-4 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+          {error}
+        </div>
+      ) : null}
+
       <div className="mt-6 space-y-3">
-        {alerts.length === 0 ? (
+        {isLoading ? (
+          <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm text-slate-400">
+            Loading alert rules...
+          </div>
+        ) : alerts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm text-slate-400">
             No alert rules saved yet.
           </div>
@@ -83,14 +117,22 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
               className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <div className="font-medium text-white">Notify when {pairSymbol.toUpperCase()} exceeds {alert.targetRate.toFixed(2)}</div>
+                <div className="font-medium text-white">
+                  Notify when {pairSymbol.toUpperCase()} exceeds {alert.targetRate.toFixed(2)}
+                </div>
                 <div className="mt-1 text-sm text-slate-400">
                   Created {new Date(alert.createdAt).toLocaleString()}
+                </div>
+                <div className="mt-1 text-sm text-slate-400">
+                  Last state: {alert.lastObservedState}
+                  {alert.lastTriggeredAt
+                    ? ` • Last sent ${new Date(alert.lastTriggeredAt).toLocaleString()}`
+                    : ""}
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => removeAlert(alert.id)}
+                onClick={() => void removeAlert(alert.id)}
                 className="rounded-xl border border-white/10 px-3 py-2 text-sm text-slate-300 transition hover:border-danger/40 hover:text-danger"
               >
                 Remove

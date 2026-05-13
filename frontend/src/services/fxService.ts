@@ -5,12 +5,14 @@ import {
   createMockUsdBrlSignal,
 } from "../data/mockUsdBrl";
 import type {
+  AlertRule,
   FxDashboardData,
   FxHistory,
   FxLatest,
   SignalAssessment,
   TimeRange,
 } from "../types/currency";
+import { buildSignalAssessment } from "../utils/signalEngine";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:7001";
 
@@ -67,13 +69,20 @@ export const getFxDashboardData = async (
   range: TimeRange,
 ): Promise<FxDashboardData> => {
   try {
-    const [latest, history, signal] = await Promise.all([
+    const [latest, history] = await Promise.all([
       getLatestRate(pairSymbol),
       getHistoricalRates(pairSymbol, range),
-      getSignal(pairSymbol),
     ]);
     const previousRate = latest.previousRate ?? history.points[history.points.length - 2]?.rate ?? latest.rate;
     const changeAmount = latest.rate - previousRate;
+    const signalPoints = history.points.slice();
+
+    if (signalPoints.length > 0) {
+      signalPoints[signalPoints.length - 1] = {
+        date: latest.timestamp,
+        rate: latest.rate,
+      };
+    }
 
     return {
       pair: latest.pair,
@@ -89,7 +98,7 @@ export const getFxDashboardData = async (
         high: Math.max(...history.points.map((point) => point.rate)),
         low: Math.min(...history.points.map((point) => point.rate)),
       },
-      signal,
+      signal: buildSignalAssessment(signalPoints),
       updatedAt: latest.timestamp,
     };
   } catch (error) {
@@ -98,5 +107,43 @@ export const getFxDashboardData = async (
     }
 
     throw error;
+  }
+};
+
+export const getAlertRules = async (pairSymbol: string): Promise<AlertRule[]> => {
+  const payload = await fetchJson<{ data: AlertRule[] }>(`/alerts?pairSymbol=${pairSymbol}`);
+  return payload.data;
+};
+
+export const createAlertRule = async (
+  pairSymbol: string,
+  targetRate: number,
+): Promise<AlertRule> => {
+  const response = await fetch(`${API_URL}/alerts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      pairSymbol,
+      targetRate,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Alert request failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as { data: AlertRule };
+  return payload.data;
+};
+
+export const deleteAlertRule = async (id: string) => {
+  const response = await fetch(`${API_URL}/alerts/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Alert delete failed with status ${response.status}`);
   }
 };

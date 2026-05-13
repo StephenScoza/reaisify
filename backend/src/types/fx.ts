@@ -39,3 +39,30 @@ export interface SignalAssessment {
   movingAverageGap: number;
   momentum: number;
 }
+
+export type AlertState = "ABOVE" | "BELOW";
+
+export interface AlertRule {
+  id: string;
+  pairSymbol: string;
+  targetRate: number;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  lastObservedState: AlertState;
+  lastTriggeredAt?: string;
+  lastTriggeredRate?: number;
+}
+
+export interface AlertDeliveryLog {
+  id: string;
+  alertId: string;
+  pairSymbol: string;
+  targetRate: number;
+  observedRate: number;
+  recommendation: Recommendation;
+  confidence: number;
+  deliveredAt: string;
+  destination: "discord" | "log-only";
+  message: string;
+}

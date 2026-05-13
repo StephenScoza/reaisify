@@ -22,8 +22,10 @@ services:
       - ./backend/.env
     environment:
       PORT: 7001
+      ALERT_STORAGE_DIR: /app/runtime
     volumes:
       - ./backend:/app
+      - ./backend/runtime:/app/runtime
       - /app/node_modules
     command: npm run dev
 
@@ -36,9 +38,17 @@ services:
       POSTGRES_DB: currency_tracker
       POSTGRES_USER: currency_tracker
       POSTGRES_PASSWORD: currency_tracker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
     profiles: ["future"]
     ports:
       - "7003:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
