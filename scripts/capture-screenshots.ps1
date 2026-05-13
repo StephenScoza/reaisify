@@ -22,7 +22,7 @@ $captures = @(
   @{
     Name = "desktop"
     Url = "http://localhost:7000"
-    WindowSize = "1440,1200"
+    WindowSize = "1440,2200"
     Output = "reaisify-desktop.png"
   },
   @{
@@ -47,6 +47,7 @@ foreach ($capture in $captures) {
     --disable-gpu `
     --no-sandbox `
     --hide-scrollbars `
+    --timeout=5000 `
     "--window-size=$($capture.WindowSize)" `
     "--screenshot=$outputPath" `
     $capture.Url | Out-Null

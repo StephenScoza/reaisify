@@ -8,6 +8,7 @@ import { RateCard } from "../components/RateCard";
 import { SignalCard } from "../components/SignalCard";
 import { SystemStatusStrip } from "../components/SystemStatusStrip";
 import { TimeRangeToggle } from "../components/TimeRangeToggle";
+import { TransferPlanningCard } from "../components/TransferPlanningCard";
 import { useExchangeRates } from "../hooks/useExchangeRates";
 import type { TimeRange } from "../types/currency";
 
@@ -67,7 +68,10 @@ export const Dashboard = () => {
 
         <div className="grid min-w-0 gap-6 xl:grid-cols-2">
           <Converter pair={series.pair} rate={series.snapshot.currentRate} />
-          <AlertRuleForm pairSymbol={series.pair.symbol} />
+          <div className="space-y-6">
+            <TransferPlanningCard pair={series.pair} rate={series.snapshot.currentRate} />
+            <AlertRuleForm pairSymbol={series.pair.symbol} />
+          </div>
         </div>
 
         <DashboardFooter />
