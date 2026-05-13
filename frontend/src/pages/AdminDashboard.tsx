@@ -50,11 +50,11 @@ export const AdminDashboard = () => (
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <div className="rounded-xl border border-slate-200 bg-sand p-4">
             <div className="font-semibold text-ink">Latest rates</div>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Twelve Data first while credits are above reserve, then Frankfurter, then mock fallback.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Twelve Data first while credits are above reserve, then Brazil-focused and keyless fallbacks before mock data.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-sand p-4">
             <div className="font-semibold text-ink">Historical charts</div>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Frankfurter first to preserve Twelve Data credits.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">BCB PTAX first for official Brazil reference data, then free/keyless time-series providers before Twelve Data.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-sand p-4">
             <div className="font-semibold text-ink">Manual controls</div>

@@ -247,13 +247,18 @@ Provider abstraction:
 - `MockFxProvider`
 - `TwelveDataFxProvider`
 - `FrankfurterFxProvider`
+- `AwesomeApiFxProvider`
+- `BcbPtaxFxProvider`
+- `ExchangeRateApiProvider`
+- `FawazCurrencyApiProvider`
+- `FxApiAppProvider`
 - `FutureProvider`
 
-The service layer is role-aware. Latest rates default to `twelve-data,frankfurter,mock` so near-real-time quotes still prefer Twelve Data. Historical rates default to `frankfurter,twelve-data,mock` so daily charts can use a free/keyless source before spending Twelve Data credits.
+The service layer is role-aware. Latest rates default to `twelve-data,awesomeapi,fxapi-app,exchange-rate-api,currency-api,bcb-ptax,frankfurter,mock` so near-real-time quotes still prefer Twelve Data, then use Brazil-focused and keyless fallbacks before mock data. Historical rates default to `bcb-ptax,frankfurter,fxapi-app,twelve-data,awesomeapi,mock` so daily charts prefer official Brazil PTAX and free/keyless time-series sources before spending Twelve Data credits.
 
-Automatic latest-rate calls also honor `TWELVE_DATA_CREDIT_RESERVE`. If the persisted provider usage snapshot reports credits left at or below that reserve, the backend skips Twelve Data for automatic calls and falls through to Frankfurter or mock data. Manual admin refreshes intentionally bypass this reserve because the user has explicitly approved spending a credit.
+Automatic latest-rate calls also honor `TWELVE_DATA_CREDIT_RESERVE`. If the persisted provider usage snapshot reports credits left at or below that reserve, the backend skips Twelve Data for automatic calls and falls through to the configured fallback chain. Manual admin refreshes intentionally bypass this reserve because the user has explicitly approved spending a credit.
 
-Frankfurter is a free, open-source exchange-rate API with no API key requirement and time-series support. It is a good fit for historical daily context, while Twelve Data remains better suited for near-real-time latest rates.
+BCB PTAX is the official Banco Central do Brasil reference source for BRL-quoted rates and is the preferred historical USD/BRL trust anchor. AwesomeAPI is a Brazil-focused near-real-time fallback for USD/BRL-style pairs. fxapi.app and Frankfurter provide keyless time-series fallbacks. ExchangeRate-API and the Fawaz Ahmed Currency API are latest-rate fallbacks only in Reaisify to avoid inefficient per-day historical fan-out.
 
 ## Caching
 

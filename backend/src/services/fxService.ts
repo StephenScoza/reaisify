@@ -3,6 +3,11 @@ import { MockFxProvider } from "../providers/MockFxProvider.js";
 import type { FxProvider } from "../providers/FxProvider.js";
 import { TwelveDataFxProvider } from "../providers/TwelveDataFxProvider.js";
 import { FrankfurterFxProvider } from "../providers/FrankfurterFxProvider.js";
+import { AwesomeApiFxProvider } from "../providers/AwesomeApiFxProvider.js";
+import { BcbPtaxFxProvider } from "../providers/BcbPtaxFxProvider.js";
+import { ExchangeRateApiProvider } from "../providers/ExchangeRateApiProvider.js";
+import { FawazCurrencyApiProvider } from "../providers/FawazCurrencyApiProvider.js";
+import { FxApiAppProvider } from "../providers/FxApiAppProvider.js";
 import { CacheService } from "./cacheService.js";
 import { buildSignalAssessment } from "../utils/signalEngine.js";
 import {
@@ -29,6 +34,11 @@ const cacheService = new CacheService({
 });
 const mockProvider = new MockFxProvider();
 const frankfurterProvider = new FrankfurterFxProvider();
+const awesomeApiProvider = new AwesomeApiFxProvider();
+const bcbPtaxProvider = new BcbPtaxFxProvider();
+const exchangeRateApiProvider = new ExchangeRateApiProvider();
+const fawazCurrencyApiProvider = new FawazCurrencyApiProvider();
+const fxApiAppProvider = new FxApiAppProvider();
 
 interface ProviderSelectionOptions {
   bypassCreditReserve?: boolean;
@@ -40,7 +50,12 @@ const getProviders = async (
 ): Promise<FxProvider[]> => {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
   const providers = new Map<string, FxProvider>([
+    ["awesomeapi", awesomeApiProvider],
+    ["bcb-ptax", bcbPtaxProvider],
+    ["currency-api", fawazCurrencyApiProvider],
+    ["exchange-rate-api", exchangeRateApiProvider],
     ["frankfurter", frankfurterProvider],
+    ["fxapi-app", fxApiAppProvider],
     ["mock", mockProvider],
   ]);
 

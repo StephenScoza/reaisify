@@ -53,13 +53,21 @@ export const logRetentionCount = () =>
 export const latestProviderPriority = () =>
   toProviderPriority(process.env.FX_LATEST_PROVIDER_PRIORITY, [
     "twelve-data",
+    "awesomeapi",
+    "fxapi-app",
+    "exchange-rate-api",
+    "currency-api",
+    "bcb-ptax",
     "frankfurter",
     "mock",
   ]);
 
 export const historyProviderPriority = () =>
   toProviderPriority(process.env.FX_HISTORY_PROVIDER_PRIORITY, [
+    "bcb-ptax",
     "frankfurter",
+    "fxapi-app",
     "twelve-data",
+    "awesomeapi",
     "mock",
   ]);
