@@ -1,20 +1,64 @@
 import { randomUUID } from "node:crypto";
-import type { AlertDeliveryLog, AlertRule, FxLatest, SignalAssessment } from "../types/fx.js";
-import { appendLogLine } from "./fileStore.js";
+import type { AlertDeliveryLog, AlertRule, FxLatest, FxPoint, SignalAssessment } from "../types/fx.js";
+import { appendLogLine, readLogLines } from "./fileStore.js";
 
 const DELIVERY_LOG_FILE = "alert-deliveries.log";
 
-const buildDiscordPayload = (alert: AlertRule, latest: FxLatest, signal: SignalAssessment) => ({
-  username: "Currency Tracker",
+const buildChartUrl = (points: FxPoint[]) => {
+  const sampledPoints = points.slice(-30);
+  const config = {
+    type: "line",
+    data: {
+      labels: sampledPoints.map((point) =>
+        new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(
+          new Date(point.date),
+        ),
+      ),
+      datasets: [
+        {
+          label: "USD/BRL",
+          data: sampledPoints.map((point) => point.rate),
+          borderColor: "#16A34A",
+          backgroundColor: "rgba(22, 163, 74, 0.12)",
+          borderWidth: 3,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.35,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: "#64748B" } },
+        y: { grid: { color: "rgba(100,116,139,0.18)" }, ticks: { color: "#64748B" } },
+      },
+    },
+  };
+
+  return `https://quickchart.io/chart?width=900&height=360&backgroundColor=white&c=${encodeURIComponent(
+    JSON.stringify(config),
+  )}`;
+};
+
+const buildDiscordPayload = (
+  alert: AlertRule,
+  latest: FxLatest,
+  signal: SignalAssessment,
+  chartPoints: FxPoint[] = [],
+) => ({
+  username: "Reaisify",
   embeds: [
     {
-      title: `FX opportunity: ${latest.pair.base}/${latest.pair.quote}`,
+      title: `${latest.pair.base}/${latest.pair.quote} transfer signal`,
       color:
         signal.recommendation === "GOOD"
-          ? 0x2ecc71
+          ? 0x16a34a
           : signal.recommendation === "NEUTRAL"
-            ? 0xf39c12
-            : 0xe74c3c,
+            ? 0x64748b
+            : 0x0d1b2a,
       description: signal.reasoning,
       fields: [
         { name: "Observed rate", value: latest.rate.toFixed(4), inline: true },
@@ -22,7 +66,12 @@ const buildDiscordPayload = (alert: AlertRule, latest: FxLatest, signal: SignalA
         { name: "Recommendation", value: signal.recommendation, inline: true },
         { name: "Confidence", value: `${signal.confidence}%`, inline: true },
         { name: "Trend", value: signal.trendDirection, inline: true },
+        { name: "Source", value: latest.source, inline: true },
       ],
+      image: chartPoints.length > 0 ? { url: buildChartUrl(chartPoints) } : undefined,
+      footer: {
+        text: "Reaisify - Dollars to Reais. Real simple.",
+      },
       timestamp: latest.timestamp,
     },
   ],
@@ -50,6 +99,7 @@ export const sendOpportunityNotification = async (
   alert: AlertRule,
   latest: FxLatest,
   signal: SignalAssessment,
+  chartPoints: FxPoint[] = [],
 ) => {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL?.trim();
   const destination: AlertDeliveryLog["destination"] = webhookUrl ? "discord" : "log-only";
@@ -61,7 +111,7 @@ export const sendOpportunityNotification = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(buildDiscordPayload(alert, latest, signal)),
+      body: JSON.stringify(buildDiscordPayload(alert, latest, signal, chartPoints)),
     });
 
     if (!response.ok) {
@@ -74,3 +124,8 @@ export const sendOpportunityNotification = async (
 };
 
 export const isDiscordConfigured = () => Boolean(process.env.DISCORD_WEBHOOK_URL?.trim());
+
+export const listDeliveryLogs = async (limit = 25): Promise<AlertDeliveryLog[]> => {
+  const lines = await readLogLines(DELIVERY_LOG_FILE, limit);
+  return lines.map((line) => JSON.parse(line) as AlertDeliveryLog);
+};

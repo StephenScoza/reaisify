@@ -5,11 +5,13 @@ import {
   createMockUsdBrlSignal,
 } from "../data/mockUsdBrl";
 import type {
+  AlertDeliveryLog,
   AlertRule,
   FxDashboardData,
   FxHistory,
   FxLatest,
   SignalAssessment,
+  SystemStatus,
   TimeRange,
 } from "../types/currency";
 import { buildSignalAssessment } from "../utils/signalEngine";
@@ -146,4 +148,31 @@ export const deleteAlertRule = async (id: string) => {
   if (!response.ok) {
     throw new Error(`Alert delete failed with status ${response.status}`);
   }
+};
+
+export const getSystemStatus = async (): Promise<SystemStatus> => {
+  const payload = await fetchJson<{ data: SystemStatus }>("/status");
+  return payload.data;
+};
+
+export const getAlertDeliveries = async (limit = 5): Promise<AlertDeliveryLog[]> => {
+  const payload = await fetchJson<{ data: AlertDeliveryLog[] }>(`/alerts/deliveries?limit=${limit}`);
+  return payload.data;
+};
+
+export const sendDiscordTest = async (pairSymbol: string): Promise<AlertDeliveryLog> => {
+  const response = await fetch(`${API_URL}/alerts/test-discord`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ pairSymbol }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Discord test failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as { data: AlertDeliveryLog };
+  return payload.data;
 };

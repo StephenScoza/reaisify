@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createAlert, deleteAlert, listAlerts } from "../services/alertService.js";
-import { sendOpportunityNotification } from "../services/discordService.js";
-import { getLatestRate, getSignal } from "../services/fxService.js";
+import { listDeliveryLogs, sendOpportunityNotification } from "../services/discordService.js";
+import { buildSignalFromSeries, getHistoricalRates, getLatestRate } from "../services/fxService.js";
 
 export const alertRoutes = Router();
 
@@ -14,6 +14,18 @@ alertRoutes.get("/", async (request, response) => {
   } catch (error) {
     response.status(500).json({
       error: error instanceof Error ? error.message : "Failed to load alerts.",
+    });
+  }
+});
+
+alertRoutes.get("/deliveries", async (request, response) => {
+  try {
+    const limit = Number(request.query.limit ?? 10);
+    const data = await listDeliveryLogs(Number.isFinite(limit) ? limit : 10);
+    response.json({ data });
+  } catch (error) {
+    response.status(500).json({
+      error: error instanceof Error ? error.message : "Failed to load alert deliveries.",
     });
   }
 });
@@ -44,7 +56,8 @@ alertRoutes.post("/test-discord", async (request, response) => {
   try {
     const pairSymbol = String(request.body.pairSymbol ?? "usd-brl").toLowerCase();
     const latest = await getLatestRate(pairSymbol);
-    const signal = await getSignal(pairSymbol);
+    const history = await getHistoricalRates(pairSymbol, "30D");
+    const signal = buildSignalFromSeries(history, latest);
     const data = await sendOpportunityNotification(
       {
         id: "manual-test",
@@ -57,6 +70,7 @@ alertRoutes.post("/test-discord", async (request, response) => {
       },
       latest,
       signal,
+      history.points,
     );
 
     response.json({ data });

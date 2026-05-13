@@ -57,6 +57,28 @@ export interface AlertRule {
   lastTriggeredRate?: number;
 }
 
+export interface AlertDeliveryLog {
+  id: string;
+  alertId: string;
+  pairSymbol: string;
+  targetRate: number;
+  observedRate: number;
+  recommendation: Recommendation;
+  confidence: number;
+  deliveredAt: string;
+  destination: "discord" | "log-only";
+  message: string;
+}
+
+export interface SystemStatus {
+  service: string;
+  timestamp: string;
+  liveFxConfigured: boolean;
+  discordConfigured: boolean;
+  alertPollIntervalMs: number;
+  alertStorageDir: string;
+}
+
 export interface FxHistory {
   pair: CurrencyPair;
   points: FxPoint[];

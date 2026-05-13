@@ -5,12 +5,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#06131d",
-        ocean: "#0b2535",
-        surf: "#c7f0ff",
-        mint: "#8ff0c8",
-        sand: "#f4ead5",
-        sunrise: "#ffb36b",
+        ink: "#0D1B2A",
+        ocean: "#162235",
+        surf: "#E8F5EA",
+        mint: "#16A34A",
+        sand: "#F5F7F9",
+        sunrise: "#22C55E",
+        slatebrand: "#64748B",
         danger: "#ff7a7a",
       },
       boxShadow: {
@@ -21,8 +22,8 @@ export default {
           "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
       },
       fontFamily: {
-        sans: ["Segoe UI Variable", "Aptos", "Inter", "sans-serif"],
-        display: ["Bahnschrift", "Segoe UI Variable", "sans-serif"],
+        sans: ["Poppins", "Segoe UI Variable", "Aptos", "sans-serif"],
+        display: ["Poppins", "Segoe UI Variable", "sans-serif"],
       },
     },
   },

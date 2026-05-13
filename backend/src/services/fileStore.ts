@@ -34,3 +34,22 @@ export const appendLogLine = async (fileName: string, line: string) => {
   await ensureStorageDir();
   await appendFile(resolveStoragePath(fileName), `${line}\n`, "utf8");
 };
+
+export const readLogLines = async (fileName: string, limit = 25): Promise<string[]> => {
+  await ensureStorageDir();
+
+  try {
+    const raw = await readFile(resolveStoragePath(fileName), "utf8");
+    return raw
+      .split("\n")
+      .filter(Boolean)
+      .slice(-limit)
+      .reverse();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+
+    throw error;
+  }
+};

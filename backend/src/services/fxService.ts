@@ -86,3 +86,19 @@ export const getSignal = async (pairSymbol: string): Promise<SignalAssessment> =
 
   return buildSignalAssessment(points);
 };
+
+export const buildSignalFromSeries = (
+  history: FxHistory,
+  latest: FxLatest,
+): SignalAssessment => {
+  const points = history.points.slice();
+
+  if (points.length > 0) {
+    points[points.length - 1] = {
+      date: latest.timestamp,
+      rate: latest.rate,
+    };
+  }
+
+  return buildSignalAssessment(points);
+};

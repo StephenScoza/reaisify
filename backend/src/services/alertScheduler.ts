@@ -1,6 +1,6 @@
 import { listAlerts, updateAlert } from "./alertService.js";
 import { sendOpportunityNotification } from "./discordService.js";
-import { getLatestRate, getSignal } from "./fxService.js";
+import { buildSignalFromSeries, getHistoricalRates, getLatestRate } from "./fxService.js";
 
 const DEFAULT_POLL_INTERVAL_MS = 60_000;
 
@@ -23,8 +23,9 @@ const runAlertCheck = async () => {
       const nextState = latest.rate >= alert.targetRate ? "ABOVE" : "BELOW";
 
       if (nextState === "ABOVE" && alert.lastObservedState !== "ABOVE") {
-        const signal = await getSignal(alert.pairSymbol);
-        await sendOpportunityNotification(alert, latest, signal);
+        const history = await getHistoricalRates(alert.pairSymbol, "30D");
+        const signal = buildSignalFromSeries(history, latest);
+        await sendOpportunityNotification(alert, latest, signal, history.points);
         await updateAlert({
           ...alert,
           lastObservedState: "ABOVE",
