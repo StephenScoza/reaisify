@@ -18,7 +18,7 @@ interface ExchangeChartProps {
 
 export const ExchangeChart = ({ points, title = "USD/BRL rate path", source }: ExchangeChartProps) => (
   <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
-    <div className="mb-6 flex items-center justify-between gap-4">
+    <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slatebrand">Historical Trend</p>
         <h3 className="mt-2 text-xl font-semibold text-ink">{title}</h3>
@@ -28,7 +28,7 @@ export const ExchangeChart = ({ points, title = "USD/BRL rate path", source }: E
       </div>
     </div>
 
-    <div className="h-80 w-full">
+    <div className="h-80 w-full min-w-0">
       <ResponsiveContainer>
         <AreaChart data={points}>
           <defs>

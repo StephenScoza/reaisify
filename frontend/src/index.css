@@ -17,6 +17,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     linear-gradient(135deg, rgba(232, 245, 234, 0.08), transparent 36%),
     linear-gradient(180deg, #0d1b2a 0%, #132337 52%, #f5f7f9 52%, #f5f7f9 100%);
@@ -28,6 +29,7 @@ body {
 
 #root {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 input::-webkit-outer-spin-button,

@@ -35,12 +35,12 @@ export const Dashboard = () => {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8 xl:px-8">
-      <div className="space-y-6">
+    <main className="mx-auto w-full max-w-7xl overflow-x-hidden px-4 py-6 md:px-6 md:py-8 xl:px-8">
+      <div className="min-w-0 space-y-6">
         <DashboardHeader pair={series.pair} updatedAt={series.updatedAt} source={series.latest.source} />
         <SystemStatusStrip />
 
-        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid min-w-0 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <RateCard
             snapshot={series.snapshot}
             base={series.pair.base}
@@ -49,9 +49,9 @@ export const Dashboard = () => {
           <SignalCard signal={series.signal} />
         </div>
 
-        <section className="space-y-4">
-          <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-ink shadow-glow md:flex-row md:items-center md:justify-between">
-            <div>
+        <section className="min-w-0 space-y-4">
+          <div className="flex min-w-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-ink shadow-glow md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
               <h2 className="text-2xl font-semibold text-ink">Historical context</h2>
               <p className="mt-1 text-sm text-slate-600">Zoom between tactical and long-range windows before deciding on a transfer.</p>
             </div>
@@ -64,7 +64,7 @@ export const Dashboard = () => {
           />
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-2">
+        <div className="grid min-w-0 gap-6 xl:grid-cols-2">
           <Converter pair={series.pair} rate={series.snapshot.currentRate} />
           <AlertRuleForm pairSymbol={series.pair.symbol} />
         </div>

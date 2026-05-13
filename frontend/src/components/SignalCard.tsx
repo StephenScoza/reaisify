@@ -11,11 +11,11 @@ const palette = {
 };
 
 export const SignalCard = ({ signal }: SignalCardProps) => (
-  <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
-    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-      <div>
+  <section className="max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+    <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slatebrand">Signal Engine</p>
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-3 flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
           <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${palette[signal.recommendation]}`}>
             {signal.recommendation === "GOOD"
               ? "Good time to convert"
@@ -27,7 +27,7 @@ export const SignalCard = ({ signal }: SignalCardProps) => (
         </div>
       </div>
 
-      <div className="min-w-40 rounded-xl border border-slate-200 bg-sand p-4">
+      <div className="w-full min-w-0 rounded-xl border border-slate-200 bg-sand p-4 md:w-auto md:min-w-40">
         <div className="text-sm text-slate-500">Confidence</div>
         <div className="mt-2 text-3xl font-bold text-ink">{signal.confidence}%</div>
       </div>
@@ -35,16 +35,16 @@ export const SignalCard = ({ signal }: SignalCardProps) => (
 
     <p className="mt-5 text-sm leading-6 text-slate-600">{signal.reasoning}</p>
 
-    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div className="rounded-xl border border-slate-200 bg-sand p-4">
+    <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-sand p-4">
         <div className="text-sm text-slate-500">Percentile</div>
         <div className="mt-2 text-xl font-semibold text-ink">{Math.round(signal.percentile * 100)}th</div>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-sand p-4">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-sand p-4">
         <div className="text-sm text-slate-500">30D Gap</div>
         <div className="mt-2 text-xl font-semibold text-ink">{signal.movingAverageGap.toFixed(4)}</div>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-sand p-4">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-sand p-4">
         <div className="text-sm text-slate-500">Momentum</div>
         <div className="mt-2 text-xl font-semibold text-ink">{(signal.momentum * 100).toFixed(2)}%</div>
       </div>

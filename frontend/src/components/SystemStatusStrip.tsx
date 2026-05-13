@@ -38,9 +38,9 @@ export const SystemStatusStrip = () => {
   ];
 
   return (
-    <section className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-ink shadow-glow md:grid-cols-4">
+    <section className="grid min-w-0 gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-ink shadow-glow md:grid-cols-4">
       {items.map((item) => (
-        <div key={item.label} className="rounded-xl border border-slate-200 bg-sand px-4 py-3">
+        <div key={item.label} className="min-w-0 rounded-xl border border-slate-200 bg-sand px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slatebrand">{item.label}</div>
           <div className="mt-1 flex items-center gap-2 text-sm font-semibold">
             {"active" in item ? (
