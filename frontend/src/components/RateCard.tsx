@@ -20,7 +20,7 @@ export const RateCard = ({ snapshot, base, quote, source, updatedAt }: RateCardP
   const isLive = !source.includes("mock") && !source.includes("derived");
 
   return (
-    <section className="max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+    <section className="max-w-full overflow-visible rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div className="min-w-0">
           <div className="flex items-center gap-2">

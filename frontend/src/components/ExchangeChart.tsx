@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { ReactNode } from "react";
 import type { FxPoint } from "../types/currency";
 import { formatDate, formatRate } from "../utils/formatters";
 import { EmptyState } from "./EmptyState";
@@ -17,13 +18,22 @@ interface ExchangeChartProps {
   title?: string;
   source?: string;
   updatedAt?: string;
+  controls?: ReactNode;
 }
 
 const formatUpdatedAt = (value?: string) =>
   value ? new Date(value).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Unknown";
 
-export const ExchangeChart = ({ points, title = "USD/BRL rate path", source, updatedAt }: ExchangeChartProps) => (
+export const ExchangeChart = ({ points, title = "USD/BRL rate path", source, updatedAt, controls }: ExchangeChartProps) => (
   <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+    <div className="mb-6 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 className="text-2xl font-semibold text-ink">Historical context</h2>
+        <p className="mt-1 text-sm text-slate-600">Zoom between tactical and long-range windows before deciding on a transfer.</p>
+      </div>
+      {controls}
+    </div>
+
     <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
       <div>
         <div className="flex items-center gap-2">
@@ -80,9 +90,9 @@ export const ExchangeChart = ({ points, title = "USD/BRL rate path", source, upd
                 backgroundColor: "#ffffff",
                 borderRadius: "12px",
                 border: "1px solid #e2e8f0",
-                color: "#0D1B2A",
-              }}
-              formatter={(value: number) => [formatRate(value), "Rate"]}
+              color: "#0D1B2A",
+            }}
+              formatter={(value: number) => [`R$ ${formatRate(value)}`, "BRL per USD"]}
               labelFormatter={(label) => formatDate(String(label))}
             />
             <Area

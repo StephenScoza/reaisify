@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { SignalAssessment } from "../types/currency";
 import { Icon } from "./Icon";
 import { InfoPopover } from "./InfoPopover";
@@ -43,8 +44,11 @@ const explainMomentum = (momentum: number) => {
   return `Momentum is mostly flat at ${percent}%, so the signal leans more on range and average position.`;
 };
 
-export const SignalCard = ({ signal }: SignalCardProps) => (
-  <section className="max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+export const SignalCard = ({ signal }: SignalCardProps) => {
+  const [isExplainerOpen, setIsExplainerOpen] = useState(false);
+
+  return (
+  <section className="max-w-full overflow-visible rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
     <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-start md:justify-between">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
@@ -76,16 +80,27 @@ export const SignalCard = ({ signal }: SignalCardProps) => (
 
     <p className="mt-5 text-sm leading-6 text-slate-600">{signal.reasoning}</p>
 
-    <details className="mt-4 rounded-xl border border-slate-200 bg-sand px-4 py-3">
-      <summary className="cursor-pointer text-sm font-semibold text-ink marker:text-mint">
-        Why this signal?
-      </summary>
-      <div className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+    <div className="mt-4 rounded-xl border border-slate-200 bg-sand">
+      <button
+        type="button"
+        onClick={() => setIsExplainerOpen((isOpen) => !isOpen)}
+        aria-expanded={isExplainerOpen}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-ink transition hover:text-mint focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mint/30"
+      >
+        <span>Why this signal?</span>
+        <Icon
+          name="chevronUp"
+          className={`h-4 w-4 text-mint transition-transform ${isExplainerOpen ? "" : "rotate-180"}`}
+        />
+      </button>
+      {isExplainerOpen ? (
+        <div className="space-y-2 px-4 pb-4 text-sm leading-6 text-slate-600">
         <p>{explainPercentile(signal.percentile)}</p>
         <p>{explainAverageGap(signal.movingAverageGap)}</p>
         <p>{explainMomentum(signal.momentum)}</p>
       </div>
-    </details>
+      ) : null}
+    </div>
 
     <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
       <div className="min-w-0 rounded-xl border border-slate-200 bg-sand p-4">
@@ -102,4 +117,5 @@ export const SignalCard = ({ signal }: SignalCardProps) => (
       </div>
     </div>
   </section>
-);
+  );
+};

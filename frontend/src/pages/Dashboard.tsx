@@ -33,7 +33,7 @@ const DashboardSkeleton = () => (
 );
 
 export const Dashboard = () => {
-  const [range, setRange] = useState<TimeRange>("30D");
+  const [range, setRange] = useState<TimeRange>("7D");
   const { series, filteredPoints, isLoading, error, retry } = useExchangeRates(pairSymbol, range);
 
   if (isLoading) {
@@ -78,19 +78,13 @@ export const Dashboard = () => {
           <SignalCard signal={series.signal} />
         </div>
 
-        <section className="min-w-0 space-y-4">
-          <div className="flex min-w-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-ink shadow-glow md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0">
-              <h2 className="text-2xl font-semibold text-ink">Historical context</h2>
-              <p className="mt-1 text-sm text-slate-600">Zoom between tactical and long-range windows before deciding on a transfer.</p>
-            </div>
-            <TimeRangeToggle activeRange={range} onChange={setRange} />
-          </div>
+        <section className="min-w-0">
           <ExchangeChart
             points={filteredPoints}
             title={`${series.pair.base}/${series.pair.quote} rate path`}
             source={series.history.source}
             updatedAt={series.history.updatedAt}
+            controls={<TimeRangeToggle activeRange={range} onChange={setRange} />}
           />
         </section>
 

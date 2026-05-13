@@ -4,6 +4,51 @@ import { appendLogLine, readLogLines } from "./fileStore.js";
 
 const DELIVERY_LOG_FILE = "alert-deliveries.log";
 
+const buildChartUrl = (points: FxPoint[]) => {
+  const sampledPoints = points.slice(-30);
+  const config = {
+    type: "line",
+    data: {
+      labels: sampledPoints.map((point) =>
+        new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(
+          new Date(point.date),
+        ),
+      ),
+      datasets: [
+        {
+          label: "USD/BRL",
+          data: sampledPoints.map((point) => point.rate),
+          borderColor: "#16A34A",
+          backgroundColor: "rgba(22, 163, 74, 0.12)",
+          borderWidth: 3,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.35,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: "#64748B" } },
+        y: {
+          grid: { color: "rgba(100,116,139,0.18)" },
+          ticks: {
+            color: "#64748B",
+            callback: "function(value) { return 'R$ ' + Number(value).toFixed(2); }",
+          },
+        },
+      },
+    },
+  };
+
+  return `https://quickchart.io/chart?width=900&height=360&backgroundColor=white&c=${encodeURIComponent(
+    JSON.stringify(config),
+  )}`;
+};
+
 const recommendationLabel = (signal: SignalAssessment) =>
   signal.recommendation === "GOOD"
     ? "Good time to convert"
@@ -15,7 +60,7 @@ const buildDiscordPayload = (
   alert: AlertRule,
   latest: FxLatest,
   signal: SignalAssessment,
-  _chartPoints: FxPoint[] = [],
+  chartPoints: FxPoint[] = [],
 ) => ({
   username: "Reaisify",
   embeds: [
@@ -39,6 +84,7 @@ const buildDiscordPayload = (
       footer: {
         text: "Reaisify - backend-proxied FX alert",
       },
+      image: chartPoints.length > 0 ? { url: buildChartUrl(chartPoints) } : undefined,
       timestamp: latest.timestamp,
     },
   ],

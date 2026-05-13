@@ -33,7 +33,7 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
   const customRecipientAmount = Math.max(0, numericAmount - customFeeUsd) * rate;
 
   return (
-    <section className="max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
+    <section className="max-w-full overflow-visible rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
