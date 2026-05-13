@@ -14,7 +14,14 @@ export const DashboardHeader = ({ pair, updatedAt, source }: DashboardHeaderProp
         <p className="mb-3 inline-flex max-w-full rounded-full border border-mint/20 bg-surf px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mint">
           Dollars to Reais. Real simple.
         </p>
-        <h1 className="font-display text-4xl font-bold text-ink md:text-5xl">Reaisify</h1>
+        <div className="flex items-center gap-3">
+          <img
+            src="/reaisify-mark.svg"
+            alt="Reaisify logo"
+            className="h-14 w-14 rounded-2xl shadow-sm"
+          />
+          <h1 className="font-display text-4xl font-bold text-ink md:text-5xl">Reaisify</h1>
+        </div>
         <p className="mt-3 max-w-xl text-wrap text-sm leading-6 text-slate-600 md:text-base">
           Track smarter, spend better. Monitor {pair.base} to {pair.quote} trends and decide when a transfer into Brazil looks attractive.
         </p>
