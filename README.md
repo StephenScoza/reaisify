@@ -14,6 +14,10 @@ This MVP is intentionally more than a simple converter. It combines current pric
 
 ![Reaisify mobile dashboard](docs/screenshots/reaisify-mobile.png)
 
+### Admin Console
+
+![Reaisify admin console](docs/screenshots/reaisify-admin.png)
+
 ## Stack
 
 - Frontend: React, TypeScript, Vite, TailwindCSS, Recharts
@@ -136,6 +140,16 @@ Persistence in Docker:
 - `redis_data` persists Redis when the future profile is enabled
 
 Reserved future services can be enabled later using the `future` compose profile.
+
+### Refreshing README screenshots
+
+With the Docker or local dev stack running, regenerate the README screenshots with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\capture-screenshots.ps1
+```
+
+The script captures desktop, mobile, and admin views from `localhost:7000`. It uses the persisted backend cache when available and does not intentionally force a live provider refresh.
 
 ## API Endpoints
 
