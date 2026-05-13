@@ -9,6 +9,7 @@ const LATEST_TTL_MS = 60 * 1000;
 const HISTORY_TTL_MS = 60 * 60 * 1000;
 
 const cacheService = new CacheService();
+const mockProvider = new MockFxProvider();
 
 const getProvider = (): FxProvider => {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
@@ -25,8 +26,19 @@ export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
     return cached;
   }
 
-  const provider = getProvider();
-  const latest = await provider.getLatestRate(pairSymbol);
+  let latest: FxLatest;
+
+  try {
+    const provider = getProvider();
+    latest = await provider.getLatestRate(pairSymbol);
+  } catch (error) {
+    console.warn("Live latest FX request failed; falling back to mock provider.", error);
+    latest = {
+      ...(await mockProvider.getLatestRate(pairSymbol)),
+      source: "mock-fallback",
+    };
+  }
+
   cacheService.set(cacheKey, latest, LATEST_TTL_MS);
   return latest;
 };
@@ -41,8 +53,19 @@ export const getHistoricalRates = async (
     return cached;
   }
 
-  const provider = getProvider();
-  const history = await provider.getHistoricalRates(pairSymbol, range);
+  let history: FxHistory;
+
+  try {
+    const provider = getProvider();
+    history = await provider.getHistoricalRates(pairSymbol, range);
+  } catch (error) {
+    console.warn("Live historical FX request failed; falling back to mock provider.", error);
+    history = {
+      ...(await mockProvider.getHistoricalRates(pairSymbol, range)),
+      source: "mock-fallback",
+    };
+  }
+
   cacheService.set(cacheKey, history, HISTORY_TTL_MS);
   return history;
 };
