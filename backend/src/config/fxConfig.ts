@@ -3,6 +3,11 @@ const toPositiveNumber = (value: string | undefined, fallback: number) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
+const toNonNegativeNumber = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+};
+
 const toProviderPriority = (value: string | undefined, fallback: string[]) =>
   (value ?? fallback.join(","))
     .split(",")
@@ -29,6 +34,9 @@ export const fxCacheFileName = () =>
 
 export const providerUsageCacheTtlMs = () =>
   toPositiveNumber(process.env.PROVIDER_USAGE_CACHE_TTL_MS, 60 * 60 * 1000);
+
+export const twelveDataCreditReserve = () =>
+  toNonNegativeNumber(process.env.TWELVE_DATA_CREDIT_RESERVE, 2);
 
 export const logDirectory = () =>
   process.env.LOG_DIR ?? `${process.env.ALERT_STORAGE_DIR ?? "./runtime"}/logs`;

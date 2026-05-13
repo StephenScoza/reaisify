@@ -6,6 +6,7 @@ import {
   latestCacheTtlMs,
   latestProviderPriority,
   shouldPersistFxCache,
+  twelveDataCreditReserve,
 } from "../config/fxConfig.js";
 
 const hasConfiguredTwelveDataKey = () => {
@@ -24,5 +25,6 @@ export const getSystemStatus = () => ({
   fxCachePersistence: shouldPersistFxCache(),
   latestProviderPriority: latestProviderPriority(),
   historyProviderPriority: historyProviderPriority(),
+  twelveDataCreditReserve: twelveDataCreditReserve(),
   alertStorageDir: process.env.ALERT_STORAGE_DIR ?? "./runtime",
 });

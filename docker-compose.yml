@@ -30,6 +30,7 @@ services:
       FX_CACHE_PERSISTENCE: "true"
       FX_CACHE_FILE_NAME: fx-cache.json
       PROVIDER_USAGE_CACHE_TTL_MS: 3600000
+      TWELVE_DATA_CREDIT_RESERVE: 2
       LOG_DIR: /app/runtime/logs
       LOG_LEVEL: info
       LOG_ROTATION_SIZE: 10m

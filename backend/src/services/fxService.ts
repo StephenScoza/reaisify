@@ -13,6 +13,8 @@ import {
   latestProviderPriority,
   shouldPersistFxCache,
 } from "../config/fxConfig.js";
+import { shouldReserveTwelveDataCredits } from "./providerUsageService.js";
+import { logger } from "./logger.js";
 
 const rangeToDays: Record<TimeRange, number> = {
   "7D": 7,
@@ -28,15 +30,36 @@ const cacheService = new CacheService({
 const mockProvider = new MockFxProvider();
 const frankfurterProvider = new FrankfurterFxProvider();
 
-const getProviders = (priority: string[]): FxProvider[] => {
+interface ProviderSelectionOptions {
+  bypassCreditReserve?: boolean;
+}
+
+const getProviders = async (
+  priority: string[],
+  options: ProviderSelectionOptions = {},
+): Promise<FxProvider[]> => {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
   const providers = new Map<string, FxProvider>([
     ["frankfurter", frankfurterProvider],
     ["mock", mockProvider],
   ]);
 
-  if (apiKey && apiKey !== "replace-with-your-twelve-data-api-key") {
+  const canUseTwelveDataKey = apiKey && apiKey !== "replace-with-your-twelve-data-api-key";
+  const shouldReserveCredits =
+    canUseTwelveDataKey && !options.bypassCreditReserve
+      ? await shouldReserveTwelveDataCredits()
+      : false;
+
+  if (canUseTwelveDataKey && !shouldReserveCredits) {
     providers.set("twelve-data", new TwelveDataFxProvider(apiKey));
+  } else if (canUseTwelveDataKey && shouldReserveCredits) {
+    logger.warn(
+      {
+        component: "fx-provider",
+        provider: "twelve-data",
+      },
+      "Skipping Twelve Data automatic provider call because credit reserve threshold has been reached.",
+    );
   }
 
   return priority
@@ -56,11 +79,24 @@ const withProviderFallback = async <T>(
       return await action(provider);
     } catch (error) {
       lastError = error;
-      console.warn(`${provider.name} FX request failed; trying next provider.`, error);
+      logger.warn(
+        {
+          component: "fx-provider",
+          provider: provider.name,
+          error,
+        },
+        `${provider.name} FX request failed; trying next provider.`,
+      );
     }
   }
 
-  console.warn(fallbackMessage, lastError);
+  logger.warn(
+    {
+      component: "fx-provider",
+      error: lastError,
+    },
+    fallbackMessage,
+  );
   return action(mockProvider);
 };
 
@@ -72,7 +108,7 @@ export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
   }
 
   const latest = await withProviderFallback(
-    getProviders(latestProviderPriority()),
+    await getProviders(latestProviderPriority()),
     (provider) => provider.getLatestRate(pairSymbol),
     "All latest FX providers failed; falling back to mock provider.",
   );
@@ -83,7 +119,7 @@ export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
 
 export const refreshLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
   const latest = await withProviderFallback(
-    getProviders(latestProviderPriority()),
+    await getProviders(latestProviderPriority(), { bypassCreditReserve: true }),
     (provider) => provider.getLatestRate(pairSymbol),
     "All latest FX providers failed during manual refresh; falling back to mock provider.",
   );
@@ -116,7 +152,7 @@ export const getHistoricalRates = async (
   }
 
   const history = await withProviderFallback(
-    getProviders(historyProviderPriority()),
+    await getProviders(historyProviderPriority()),
     (provider) => provider.getHistoricalRates(pairSymbol, "1Y"),
     "All historical FX providers failed; falling back to mock provider.",
   );

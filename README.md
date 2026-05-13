@@ -96,6 +96,7 @@ FX_HISTORY_CACHE_TTL_MS=86400000
 FX_CACHE_PERSISTENCE=true
 FX_CACHE_FILE_NAME=fx-cache.json
 PROVIDER_USAGE_CACHE_TTL_MS=3600000
+TWELVE_DATA_CREDIT_RESERVE=2
 LOG_DIR=./runtime/logs
 LOG_LEVEL=info
 LOG_ROTATION_SIZE=10m
@@ -246,6 +247,8 @@ Provider abstraction:
 
 The service layer is role-aware. Latest rates default to `twelve-data,frankfurter,mock` so near-real-time quotes still prefer Twelve Data. Historical rates default to `frankfurter,twelve-data,mock` so daily charts can use a free/keyless source before spending Twelve Data credits.
 
+Automatic latest-rate calls also honor `TWELVE_DATA_CREDIT_RESERVE`. If the persisted provider usage snapshot reports credits left at or below that reserve, the backend skips Twelve Data for automatic calls and falls through to Frankfurter or mock data. Manual admin refreshes intentionally bypass this reserve because the user has explicitly approved spending a credit.
+
 Frankfurter is a free, open-source exchange-rate API with no API key requirement and time-series support. It is a good fit for historical daily context, while Twelve Data remains better suited for near-real-time latest rates.
 
 ## Caching
@@ -255,6 +258,7 @@ Frankfurter is a free, open-source exchange-rate API with no API key requirement
 - Alert scheduler polling: 15 minutes by default
 - FX cache persistence: enabled by default in `backend/runtime/fx-cache.json`
 - Provider usage snapshot: persisted in `backend/runtime/provider-usage.json`
+- Twelve Data credit reserve: `2` credits by default
 
 These defaults intentionally conserve Twelve Data free-tier credits while the app is under active development. The persisted cache also survives backend container restarts, so refreshing Docker does not immediately force new provider calls while cached data is still valid. Lower `FX_LATEST_CACHE_TTL_MS` or `ALERT_POLL_INTERVAL_MS` only when you need fresher live checks.
 

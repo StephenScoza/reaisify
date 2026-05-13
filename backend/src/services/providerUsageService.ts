@@ -1,5 +1,5 @@
 import type { ProviderUsageSnapshot } from "../types/fx.js";
-import { providerUsageCacheTtlMs } from "../config/fxConfig.js";
+import { providerUsageCacheTtlMs, twelveDataCreditReserve } from "../config/fxConfig.js";
 import { readJsonFile, writeJsonFile } from "./fileStore.js";
 
 const USAGE_FILE_NAME = "provider-usage.json";
@@ -116,6 +116,16 @@ export const recordTwelveDataUsageFromHeaders = async (headers: Headers) => {
 };
 
 export const getProviderUsage = async () => readUsage();
+
+export const shouldReserveTwelveDataCredits = async () => {
+  const reserve = twelveDataCreditReserve();
+  if (reserve <= 0) {
+    return false;
+  }
+
+  const usage = await readUsage();
+  return usage.apiCreditsLeft !== undefined && usage.apiCreditsLeft <= reserve;
+};
 
 export const refreshTwelveDataUsage = async () => {
   const apiKey = process.env.TWELVE_DATA_API_KEY?.trim();

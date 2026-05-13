@@ -81,6 +81,7 @@ export interface SystemStatus {
   fxCachePersistence: boolean;
   latestProviderPriority: string[];
   historyProviderPriority: string[];
+  twelveDataCreditReserve: number;
   alertStorageDir: string;
 }
 
