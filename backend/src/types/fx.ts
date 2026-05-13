@@ -66,3 +66,16 @@ export interface AlertDeliveryLog {
   destination: "discord" | "log-only";
   message: string;
 }
+
+export type ProviderUsageSource = "response-headers" | "api-usage" | "not-available";
+
+export interface ProviderUsageSnapshot {
+  providerName: string;
+  source: ProviderUsageSource;
+  updatedAt: string;
+  apiCreditsUsed?: number;
+  apiCreditsLeft?: number;
+  apiCreditLimit?: number;
+  raw?: unknown;
+  note?: string;
+}

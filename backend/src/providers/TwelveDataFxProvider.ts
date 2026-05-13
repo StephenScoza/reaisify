@@ -1,6 +1,7 @@
 import type { FxHistory, FxLatest, FxPoint, TimeRange } from "../types/fx.js";
 import type { FxProvider } from "./FxProvider.js";
 import { buildPair, toTwelveDataSymbol } from "../utils/pairs.js";
+import { recordTwelveDataUsageFromHeaders } from "../services/providerUsageService.js";
 
 const rangeToDays: Record<TimeRange, number> = {
   "7D": 7,
@@ -39,6 +40,8 @@ export class TwelveDataFxProvider implements FxProvider {
     if (!response.ok) {
       throw new Error(`Twelve Data request failed with status ${response.status}`);
     }
+
+    await recordTwelveDataUsageFromHeaders(response.headers);
 
     const payload = (await response.json()) as T;
     if (payload.status === "error" || payload.code) {

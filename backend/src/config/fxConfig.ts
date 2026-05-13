@@ -20,3 +20,6 @@ export const shouldPersistFxCache = () =>
 
 export const fxCacheFileName = () =>
   process.env.FX_CACHE_FILE_NAME ?? "fx-cache.json";
+
+export const providerUsageCacheTtlMs = () =>
+  toPositiveNumber(process.env.PROVIDER_USAGE_CACHE_TTL_MS, 60 * 60 * 1000);

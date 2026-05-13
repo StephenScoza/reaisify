@@ -10,6 +10,7 @@ import type {
   FxDashboardData,
   FxHistory,
   FxLatest,
+  ProviderUsageSnapshot,
   SignalAssessment,
   SystemStatus,
   TimeRange,
@@ -152,6 +153,11 @@ export const deleteAlertRule = async (id: string) => {
 
 export const getSystemStatus = async (): Promise<SystemStatus> => {
   const payload = await fetchJson<{ data: SystemStatus }>("/status");
+  return payload.data;
+};
+
+export const getProviderUsage = async (): Promise<ProviderUsageSnapshot> => {
+  const payload = await fetchJson<{ data: ProviderUsageSnapshot }>("/status/provider-usage");
   return payload.data;
 };
 

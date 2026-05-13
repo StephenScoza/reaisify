@@ -88,6 +88,7 @@ FX_LATEST_CACHE_TTL_MS=900000
 FX_HISTORY_CACHE_TTL_MS=86400000
 FX_CACHE_PERSISTENCE=true
 FX_CACHE_FILE_NAME=fx-cache.json
+PROVIDER_USAGE_CACHE_TTL_MS=3600000
 ALERT_POLL_INTERVAL_MS=900000
 ALERT_RUN_ON_STARTUP=false
 DISCORD_WEBHOOK_URL=
@@ -138,6 +139,14 @@ Returns API health metadata.
 ### `GET /status`
 
 Returns runtime flags for live FX, Discord webhook configuration, alert storage, and scheduler interval.
+
+### `GET /status/provider-usage`
+
+Returns the latest persisted provider credit snapshot. Twelve Data usage is captured from normal response headers when available, so this endpoint does not spend an additional provider credit.
+
+### `GET /status/provider-usage?refresh=true`
+
+Manually refreshes Twelve Data usage via the provider usage endpoint and caches the result for `PROVIDER_USAGE_CACHE_TTL_MS`. Use sparingly because Twelve Data counts this request against API credits.
 
 ### `GET /fx/usd-brl/latest`
 
@@ -219,6 +228,7 @@ The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and 
 - Historical cache TTL: 24 hours by default
 - Alert scheduler polling: 15 minutes by default
 - FX cache persistence: enabled by default in `backend/runtime/fx-cache.json`
+- Provider usage snapshot: persisted in `backend/runtime/provider-usage.json`
 
 These defaults intentionally conserve Twelve Data free-tier credits while the app is under active development. The persisted cache also survives backend container restarts, so refreshing Docker does not immediately force new provider calls while cached data is still valid. Lower `FX_LATEST_CACHE_TTL_MS` or `ALERT_POLL_INTERVAL_MS` only when you need fresher live checks.
 

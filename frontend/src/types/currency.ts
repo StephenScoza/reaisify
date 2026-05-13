@@ -82,6 +82,18 @@ export interface SystemStatus {
   alertStorageDir: string;
 }
 
+export type ProviderUsageSource = "response-headers" | "api-usage" | "not-available";
+
+export interface ProviderUsageSnapshot {
+  providerName: string;
+  source: ProviderUsageSource;
+  updatedAt: string;
+  apiCreditsUsed?: number;
+  apiCreditsLeft?: number;
+  apiCreditLimit?: number;
+  note?: string;
+}
+
 export interface FxHistory {
   pair: CurrencyPair;
   points: FxPoint[];

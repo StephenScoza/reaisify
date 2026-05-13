@@ -37,6 +37,7 @@ export class CacheService {
 
     if (Date.now() > entry.expiresAt) {
       this.store.delete(key);
+      this.saveToDisk();
       return null;
     }
 
