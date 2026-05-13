@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { CurrencyPair } from "../types/currency";
 import { formatCurrency, formatRate, formatSignedNumber } from "../utils/formatters";
+import { AnimatedNumber } from "./AnimatedNumber";
 import { Icon } from "./Icon";
 import { InfoPopover } from "./InfoPopover";
 
@@ -84,13 +85,19 @@ export const TransferPlanningCard = ({ pair, rate }: TransferPlanningCardProps) 
         <div className="rounded-xl border border-slate-200 bg-sand p-4">
           <div className="text-xs text-slate-500">Convert today at {formatRate(rate)}</div>
           <div className="mt-2 text-2xl font-bold text-ink">
-            {formatCurrency(plan.todayValue, pair.quote, "pt-BR")}
+            <AnimatedNumber
+              value={plan.todayValue}
+              formatter={(value) => formatCurrency(value, pair.quote, "pt-BR")}
+            />
           </div>
         </div>
         <div className="rounded-xl border border-slate-200 bg-sand p-4">
           <div className="text-xs text-slate-500">Convert at target {formatRate(target)}</div>
           <div className="mt-2 text-2xl font-bold text-ink">
-            {formatCurrency(plan.targetValue, pair.quote, "pt-BR")}
+            <AnimatedNumber
+              value={plan.targetValue}
+              formatter={(value) => formatCurrency(value, pair.quote, "pt-BR")}
+            />
           </div>
         </div>
       </div>
@@ -106,7 +113,10 @@ export const TransferPlanningCard = ({ pair, rate }: TransferPlanningCardProps) 
       >
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slatebrand">Difference</div>
         <div className={`mt-2 text-3xl font-bold ${isTargetWorse ? "text-danger" : "text-ink"}`}>
-          {formatCurrency(plan.difference, pair.quote, "pt-BR")}
+          <AnimatedNumber
+            value={plan.difference}
+            formatter={(value) => formatCurrency(value, pair.quote, "pt-BR")}
+          />
         </div>
         <p className="mt-2 text-sm leading-6 text-slate-600">
           {isTargetBetter

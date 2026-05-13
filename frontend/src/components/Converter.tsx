@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { CurrencyPair } from "../types/currency";
 import { formatCurrency, formatPercent, formatRate } from "../utils/formatters";
 import { estimateTransferFees } from "../utils/transferFees";
+import { AnimatedNumber } from "./AnimatedNumber";
 import { Icon } from "./Icon";
 import { InfoPopover } from "./InfoPopover";
 
@@ -69,7 +70,10 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
         <div className="min-w-0 rounded-xl border border-mint/20 bg-surf p-4">
           <div className="text-sm text-slate-600">{pair.quote} equivalent</div>
           <div className="mt-2 break-words text-3xl font-bold text-ink">
-            {formatCurrency(convertedAmount, pair.quote, "pt-BR")}
+            <AnimatedNumber
+              value={convertedAmount}
+              formatter={(value) => formatCurrency(value, pair.quote, "pt-BR")}
+            />
           </div>
         </div>
       </div>
@@ -130,7 +134,10 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
             <div className="min-w-0 rounded-xl bg-white px-4 py-3">
               <div className="text-xs text-slate-500">Custom arrives</div>
               <div className="mt-1 break-words text-lg font-bold text-ink">
-                {formatCurrency(customRecipientAmount, pair.quote, "pt-BR")}
+                <AnimatedNumber
+                  value={customRecipientAmount}
+                  formatter={(value) => formatCurrency(value, pair.quote, "pt-BR")}
+                />
               </div>
               <div className="mt-1 text-xs text-slate-500">
                 Fee: {formatCurrency(customFeeUsd, pair.base)}

@@ -1,5 +1,6 @@
 import type { FxSnapshot } from "../types/currency";
 import { formatPercent, formatRate, formatSignedNumber } from "../utils/formatters";
+import { AnimatedNumber } from "./AnimatedNumber";
 import { Icon } from "./Icon";
 import { InfoPopover } from "./InfoPopover";
 
@@ -31,7 +32,9 @@ export const RateCard = ({ snapshot, base, quote, source, updatedAt }: RateCardP
               The rate shows how many Brazilian reais one US dollar buys before transfer provider fees or FX spreads.
             </InfoPopover>
           </div>
-          <h2 className="mt-3 text-4xl font-bold text-ink">{formatRate(snapshot.currentRate)}</h2>
+          <h2 className="mt-3 text-4xl font-bold text-ink">
+            <AnimatedNumber value={snapshot.currentRate} formatter={formatRate} />
+          </h2>
           <p className="mt-2 text-sm text-slate-600">1 {base} buys this many {quote}</p>
         </div>
         <span
