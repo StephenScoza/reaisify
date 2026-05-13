@@ -4,9 +4,8 @@ import type { FxProvider } from "../providers/FxProvider.js";
 import { TwelveDataFxProvider } from "../providers/TwelveDataFxProvider.js";
 import { CacheService } from "./cacheService.js";
 import { buildSignalAssessment } from "../utils/signalEngine.js";
+import { historyCacheTtlMs, latestCacheTtlMs } from "../config/fxConfig.js";
 
-const LATEST_TTL_MS = 60 * 1000;
-const HISTORY_TTL_MS = 60 * 60 * 1000;
 const rangeToDays: Record<TimeRange, number> = {
   "7D": 7,
   "30D": 30,
@@ -45,7 +44,7 @@ export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
     };
   }
 
-  cacheService.set(cacheKey, latest, LATEST_TTL_MS);
+  cacheService.set(cacheKey, latest, latestCacheTtlMs());
   return latest;
 };
 
@@ -68,7 +67,7 @@ export const getHistoricalRates = async (
       range,
       source: `${cachedYear.source}-derived`,
     };
-    cacheService.set(cacheKey, derivedHistory, HISTORY_TTL_MS);
+    cacheService.set(cacheKey, derivedHistory, historyCacheTtlMs());
     return derivedHistory;
   }
 
@@ -85,7 +84,7 @@ export const getHistoricalRates = async (
     };
   }
 
-  cacheService.set(yearlyCacheKey, history, HISTORY_TTL_MS);
+  cacheService.set(yearlyCacheKey, history, historyCacheTtlMs());
 
   if (range === "1Y") {
     return history;
@@ -97,7 +96,7 @@ export const getHistoricalRates = async (
     range,
     source: `${history.source}-derived`,
   };
-  cacheService.set(cacheKey, derivedHistory, HISTORY_TTL_MS);
+  cacheService.set(cacheKey, derivedHistory, historyCacheTtlMs());
   return derivedHistory;
 };
 

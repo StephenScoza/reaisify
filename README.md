@@ -84,7 +84,10 @@ The backend expects the Twelve Data key in [backend/.env](C:/Users/steph/dev/cur
 TWELVE_DATA_API_KEY=your-twelve-data-api-key
 PORT=7001
 ALERT_STORAGE_DIR=./runtime
-ALERT_POLL_INTERVAL_MS=60000
+FX_LATEST_CACHE_TTL_MS=900000
+FX_HISTORY_CACHE_TTL_MS=86400000
+ALERT_POLL_INTERVAL_MS=900000
+ALERT_RUN_ON_STARTUP=false
 DISCORD_WEBHOOK_URL=
 ```
 
@@ -210,14 +213,18 @@ The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and 
 
 ## Caching
 
-- Latest rate cache TTL: 60 seconds
-- Historical cache TTL: 1 hour
+- Latest rate cache TTL: 15 minutes by default
+- Historical cache TTL: 24 hours by default
+- Alert scheduler polling: 15 minutes by default
+
+These defaults intentionally conserve Twelve Data free-tier credits while the app is under active development. Lower `FX_LATEST_CACHE_TTL_MS` or `ALERT_POLL_INTERVAL_MS` only when you need fresher live checks.
 
 ## Alerting
 
 - Alert rules are stored in `backend/runtime/alerts.json`
 - Delivery history is appended to `backend/runtime/alert-deliveries.log`
 - The backend polls active rules on `ALERT_POLL_INTERVAL_MS`
+- Startup alert checks are disabled by default with `ALERT_RUN_ON_STARTUP=false` to avoid spending an API credit every container restart
 - Discord notifications fire when a rule crosses from below target to above target
 - If `DISCORD_WEBHOOK_URL` is unset, the backend still records the opportunity to the log file
 

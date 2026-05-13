@@ -1,8 +1,7 @@
 import { listAlerts, updateAlert } from "./alertService.js";
 import { sendOpportunityNotification } from "./discordService.js";
 import { buildSignalFromSeries, getHistoricalRates, getLatestRate } from "./fxService.js";
-
-const DEFAULT_POLL_INTERVAL_MS = 60_000;
+import { alertPollIntervalMs, shouldRunAlertCheckOnStartup } from "../config/fxConfig.js";
 
 let schedulerHandle: NodeJS.Timeout | null = null;
 let isRunning = false;
@@ -50,7 +49,7 @@ const runAlertCheck = async () => {
 };
 
 export const startAlertScheduler = () => {
-  const intervalMs = Number(process.env.ALERT_POLL_INTERVAL_MS ?? DEFAULT_POLL_INTERVAL_MS);
+  const intervalMs = alertPollIntervalMs();
 
   if (schedulerHandle) {
     return;
@@ -60,5 +59,7 @@ export const startAlertScheduler = () => {
     void runAlertCheck();
   }, intervalMs);
 
-  void runAlertCheck();
+  if (shouldRunAlertCheckOnStartup()) {
+    void runAlertCheck();
+  }
 };

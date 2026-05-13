@@ -2,6 +2,20 @@ import { useEffect, useState } from "react";
 import { getSystemStatus } from "../services/fxService";
 import type { SystemStatus } from "../types/currency";
 
+const formatDuration = (milliseconds?: number) => {
+  if (!milliseconds) {
+    return "--";
+  }
+
+  const minutes = Math.round(milliseconds / 60_000);
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  const hours = Math.round(minutes / 60);
+  return `${hours}h`;
+};
+
 export const SystemStatusStrip = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
 
@@ -33,8 +47,8 @@ export const SystemStatusStrip = () => {
   const items = [
     { label: "Live FX", active: status?.liveFxConfigured },
     { label: "Discord", active: status?.discordConfigured },
-    { label: "Scheduler", value: status ? `${Math.round(status.alertPollIntervalMs / 1000)}s` : "--" },
-    { label: "Storage", value: "persisted" },
+    { label: "FX Cache", value: formatDuration(status?.latestCacheTtlMs) },
+    { label: "Scheduler", value: formatDuration(status?.alertPollIntervalMs) },
   ];
 
   return (

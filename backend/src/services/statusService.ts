@@ -1,4 +1,5 @@
 import { isDiscordConfigured } from "./discordService.js";
+import { alertPollIntervalMs, historyCacheTtlMs, latestCacheTtlMs } from "../config/fxConfig.js";
 
 const hasConfiguredTwelveDataKey = () => {
   const apiKey = process.env.TWELVE_DATA_API_KEY?.trim();
@@ -10,6 +11,8 @@ export const getSystemStatus = () => ({
   timestamp: new Date().toISOString(),
   liveFxConfigured: hasConfiguredTwelveDataKey(),
   discordConfigured: isDiscordConfigured(),
-  alertPollIntervalMs: Number(process.env.ALERT_POLL_INTERVAL_MS ?? 60_000),
+  alertPollIntervalMs: alertPollIntervalMs(),
+  latestCacheTtlMs: latestCacheTtlMs(),
+  historyCacheTtlMs: historyCacheTtlMs(),
   alertStorageDir: process.env.ALERT_STORAGE_DIR ?? "./runtime",
 });

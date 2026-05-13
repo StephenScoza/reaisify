@@ -76,6 +76,8 @@ export interface SystemStatus {
   liveFxConfigured: boolean;
   discordConfigured: boolean;
   alertPollIntervalMs: number;
+  latestCacheTtlMs: number;
+  historyCacheTtlMs: number;
   alertStorageDir: string;
 }
 
