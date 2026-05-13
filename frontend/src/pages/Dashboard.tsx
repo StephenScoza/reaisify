@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AlertRuleForm } from "../components/AlertRuleForm";
 import { Converter } from "../components/Converter";
 import { DashboardHeader } from "../components/DashboardHeader";
+import { DashboardFooter } from "../components/DashboardFooter";
 import { ExchangeChart } from "../components/ExchangeChart";
 import { ProviderUsageCard } from "../components/ProviderUsageCard";
 import { RateCard } from "../components/RateCard";
@@ -72,6 +73,8 @@ export const Dashboard = () => {
             <AlertRuleForm pairSymbol={series.pair.symbol} />
           </div>
         </div>
+
+        <DashboardFooter />
       </div>
     </main>
   );
