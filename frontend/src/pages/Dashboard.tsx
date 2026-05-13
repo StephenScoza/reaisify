@@ -57,7 +57,11 @@ export const Dashboard = () => {
             </div>
             <TimeRangeToggle activeRange={range} onChange={setRange} />
           </div>
-          <ExchangeChart points={filteredPoints} title={`${series.pair.base}/${series.pair.quote} rate path`} />
+          <ExchangeChart
+            points={filteredPoints}
+            title={`${series.pair.base}/${series.pair.quote} rate path`}
+            source={series.history.source}
+          />
         </section>
 
         <div className="grid gap-6 xl:grid-cols-2">

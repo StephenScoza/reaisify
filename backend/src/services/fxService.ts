@@ -7,6 +7,12 @@ import { buildSignalAssessment } from "../utils/signalEngine.js";
 
 const LATEST_TTL_MS = 60 * 1000;
 const HISTORY_TTL_MS = 60 * 60 * 1000;
+const rangeToDays: Record<TimeRange, number> = {
+  "7D": 7,
+  "30D": 30,
+  "90D": 90,
+  "1Y": 365,
+};
 
 const cacheService = new CacheService();
 const mockProvider = new MockFxProvider();
@@ -53,21 +59,46 @@ export const getHistoricalRates = async (
     return cached;
   }
 
+  const yearlyCacheKey = `history:${pairSymbol}:1Y`;
+  const cachedYear = cacheService.get<FxHistory>(yearlyCacheKey);
+  if (cachedYear && range !== "1Y") {
+    const derivedHistory = {
+      ...cachedYear,
+      points: cachedYear.points.slice(-rangeToDays[range]),
+      range,
+      source: `${cachedYear.source}-derived`,
+    };
+    cacheService.set(cacheKey, derivedHistory, HISTORY_TTL_MS);
+    return derivedHistory;
+  }
+
   let history: FxHistory;
 
   try {
     const provider = getProvider();
-    history = await provider.getHistoricalRates(pairSymbol, range);
+    history = await provider.getHistoricalRates(pairSymbol, "1Y");
   } catch (error) {
     console.warn("Live historical FX request failed; falling back to mock provider.", error);
     history = {
-      ...(await mockProvider.getHistoricalRates(pairSymbol, range)),
+      ...(await mockProvider.getHistoricalRates(pairSymbol, "1Y")),
       source: "mock-fallback",
     };
   }
 
-  cacheService.set(cacheKey, history, HISTORY_TTL_MS);
-  return history;
+  cacheService.set(yearlyCacheKey, history, HISTORY_TTL_MS);
+
+  if (range === "1Y") {
+    return history;
+  }
+
+  const derivedHistory = {
+    ...history,
+    points: history.points.slice(-rangeToDays[range]),
+    range,
+    source: `${history.source}-derived`,
+  };
+  cacheService.set(cacheKey, derivedHistory, HISTORY_TTL_MS);
+  return derivedHistory;
 };
 
 export const getSignal = async (pairSymbol: string): Promise<SignalAssessment> => {

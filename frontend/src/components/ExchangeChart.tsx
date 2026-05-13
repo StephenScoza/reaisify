@@ -13,16 +13,19 @@ import { formatDate, formatRate } from "../utils/formatters";
 interface ExchangeChartProps {
   points: FxPoint[];
   title?: string;
+  source?: string;
 }
 
-export const ExchangeChart = ({ points, title = "USD/BRL rate path" }: ExchangeChartProps) => (
+export const ExchangeChart = ({ points, title = "USD/BRL rate path", source }: ExchangeChartProps) => (
   <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
     <div className="mb-6 flex items-center justify-between gap-4">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slatebrand">Historical Trend</p>
         <h3 className="mt-2 text-xl font-semibold text-ink">{title}</h3>
       </div>
-      <div className="text-sm text-slate-500">Live historical range</div>
+      <div className="rounded-full border border-slate-200 bg-sand px-3 py-1 text-sm font-medium text-slate-600">
+        {source?.includes("derived") ? "Cached range" : "Live range"}
+      </div>
     </div>
 
     <div className="h-80 w-full">
