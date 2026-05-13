@@ -25,6 +25,8 @@ services:
       ALERT_STORAGE_DIR: /app/runtime
       FX_LATEST_CACHE_TTL_MS: 900000
       FX_HISTORY_CACHE_TTL_MS: 86400000
+      FX_CACHE_PERSISTENCE: "true"
+      FX_CACHE_FILE_NAME: fx-cache.json
       ALERT_POLL_INTERVAL_MS: 900000
       ALERT_RUN_ON_STARTUP: "false"
     volumes:

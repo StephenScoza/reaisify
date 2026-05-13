@@ -86,6 +86,8 @@ PORT=7001
 ALERT_STORAGE_DIR=./runtime
 FX_LATEST_CACHE_TTL_MS=900000
 FX_HISTORY_CACHE_TTL_MS=86400000
+FX_CACHE_PERSISTENCE=true
+FX_CACHE_FILE_NAME=fx-cache.json
 ALERT_POLL_INTERVAL_MS=900000
 ALERT_RUN_ON_STARTUP=false
 DISCORD_WEBHOOK_URL=
@@ -216,8 +218,9 @@ The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and 
 - Latest rate cache TTL: 15 minutes by default
 - Historical cache TTL: 24 hours by default
 - Alert scheduler polling: 15 minutes by default
+- FX cache persistence: enabled by default in `backend/runtime/fx-cache.json`
 
-These defaults intentionally conserve Twelve Data free-tier credits while the app is under active development. Lower `FX_LATEST_CACHE_TTL_MS` or `ALERT_POLL_INTERVAL_MS` only when you need fresher live checks.
+These defaults intentionally conserve Twelve Data free-tier credits while the app is under active development. The persisted cache also survives backend container restarts, so refreshing Docker does not immediately force new provider calls while cached data is still valid. Lower `FX_LATEST_CACHE_TTL_MS` or `ALERT_POLL_INTERVAL_MS` only when you need fresher live checks.
 
 ## Alerting
 

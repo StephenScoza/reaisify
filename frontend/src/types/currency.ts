@@ -78,6 +78,7 @@ export interface SystemStatus {
   alertPollIntervalMs: number;
   latestCacheTtlMs: number;
   historyCacheTtlMs: number;
+  fxCachePersistence: boolean;
   alertStorageDir: string;
 }
 

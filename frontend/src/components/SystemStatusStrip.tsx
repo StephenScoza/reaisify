@@ -47,12 +47,13 @@ export const SystemStatusStrip = () => {
   const items = [
     { label: "Live FX", active: status?.liveFxConfigured },
     { label: "Discord", active: status?.discordConfigured },
-    { label: "FX Cache", value: formatDuration(status?.latestCacheTtlMs) },
+    { label: "Disk Cache", active: status?.fxCachePersistence },
+    { label: "Latest TTL", value: formatDuration(status?.latestCacheTtlMs) },
     { label: "Scheduler", value: formatDuration(status?.alertPollIntervalMs) },
   ];
 
   return (
-    <section className="grid min-w-0 gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-ink shadow-glow md:grid-cols-4">
+    <section className="grid min-w-0 gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-ink shadow-glow md:grid-cols-5">
       {items.map((item) => (
         <div key={item.label} className="min-w-0 rounded-xl border border-slate-200 bg-sand px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slatebrand">{item.label}</div>

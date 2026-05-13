@@ -4,7 +4,12 @@ import type { FxProvider } from "../providers/FxProvider.js";
 import { TwelveDataFxProvider } from "../providers/TwelveDataFxProvider.js";
 import { CacheService } from "./cacheService.js";
 import { buildSignalAssessment } from "../utils/signalEngine.js";
-import { historyCacheTtlMs, latestCacheTtlMs } from "../config/fxConfig.js";
+import {
+  fxCacheFileName,
+  historyCacheTtlMs,
+  latestCacheTtlMs,
+  shouldPersistFxCache,
+} from "../config/fxConfig.js";
 
 const rangeToDays: Record<TimeRange, number> = {
   "7D": 7,
@@ -13,7 +18,10 @@ const rangeToDays: Record<TimeRange, number> = {
   "1Y": 365,
 };
 
-const cacheService = new CacheService();
+const cacheService = new CacheService({
+  persist: shouldPersistFxCache(),
+  fileName: fxCacheFileName(),
+});
 const mockProvider = new MockFxProvider();
 
 const getProvider = (): FxProvider => {

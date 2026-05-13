@@ -14,3 +14,9 @@ export const alertPollIntervalMs = () =>
 
 export const shouldRunAlertCheckOnStartup = () =>
   process.env.ALERT_RUN_ON_STARTUP === "true";
+
+export const shouldPersistFxCache = () =>
+  process.env.FX_CACHE_PERSISTENCE !== "false";
+
+export const fxCacheFileName = () =>
+  process.env.FX_CACHE_FILE_NAME ?? "fx-cache.json";
