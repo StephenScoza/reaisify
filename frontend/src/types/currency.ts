@@ -79,6 +79,8 @@ export interface SystemStatus {
   latestCacheTtlMs: number;
   historyCacheTtlMs: number;
   fxCachePersistence: boolean;
+  latestProviderPriority: string[];
+  historyProviderPriority: string[];
   alertStorageDir: string;
 }
 

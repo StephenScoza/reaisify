@@ -84,6 +84,8 @@ The backend expects the Twelve Data key in [backend/.env](C:/Users/steph/dev/cur
 TWELVE_DATA_API_KEY=your-twelve-data-api-key
 PORT=7001
 ALERT_STORAGE_DIR=./runtime
+FX_LATEST_PROVIDER_PRIORITY=twelve-data,frankfurter,mock
+FX_HISTORY_PROVIDER_PRIORITY=frankfurter,twelve-data,mock
 FX_LATEST_CACHE_TTL_MS=900000
 FX_HISTORY_CACHE_TTL_MS=86400000
 FX_CACHE_PERSISTENCE=true
@@ -218,9 +220,12 @@ Provider abstraction:
 
 - `MockFxProvider`
 - `TwelveDataFxProvider`
+- `FrankfurterFxProvider`
 - `FutureProvider`
 
-The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and falls back to mock data otherwise.
+The service layer is role-aware. Latest rates default to `twelve-data,frankfurter,mock` so near-real-time quotes still prefer Twelve Data. Historical rates default to `frankfurter,twelve-data,mock` so daily charts can use a free/keyless source before spending Twelve Data credits.
+
+Frankfurter is a free, open-source exchange-rate API with no API key requirement and time-series support. It is a good fit for historical daily context, while Twelve Data remains better suited for near-real-time latest rates.
 
 ## Caching
 

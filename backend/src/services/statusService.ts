@@ -2,7 +2,9 @@ import { isDiscordConfigured } from "./discordService.js";
 import {
   alertPollIntervalMs,
   historyCacheTtlMs,
+  historyProviderPriority,
   latestCacheTtlMs,
+  latestProviderPriority,
   shouldPersistFxCache,
 } from "../config/fxConfig.js";
 
@@ -20,5 +22,7 @@ export const getSystemStatus = () => ({
   latestCacheTtlMs: latestCacheTtlMs(),
   historyCacheTtlMs: historyCacheTtlMs(),
   fxCachePersistence: shouldPersistFxCache(),
+  latestProviderPriority: latestProviderPriority(),
+  historyProviderPriority: historyProviderPriority(),
   alertStorageDir: process.env.ALERT_STORAGE_DIR ?? "./runtime",
 });

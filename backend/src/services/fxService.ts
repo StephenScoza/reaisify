@@ -2,12 +2,15 @@ import type { FxHistory, FxLatest, SignalAssessment, TimeRange } from "../types/
 import { MockFxProvider } from "../providers/MockFxProvider.js";
 import type { FxProvider } from "../providers/FxProvider.js";
 import { TwelveDataFxProvider } from "../providers/TwelveDataFxProvider.js";
+import { FrankfurterFxProvider } from "../providers/FrankfurterFxProvider.js";
 import { CacheService } from "./cacheService.js";
 import { buildSignalAssessment } from "../utils/signalEngine.js";
 import {
   fxCacheFileName,
+  historyProviderPriority,
   historyCacheTtlMs,
   latestCacheTtlMs,
+  latestProviderPriority,
   shouldPersistFxCache,
 } from "../config/fxConfig.js";
 
@@ -23,15 +26,44 @@ const cacheService = new CacheService({
   fileName: fxCacheFileName(),
 });
 const mockProvider = new MockFxProvider();
+const frankfurterProvider = new FrankfurterFxProvider();
 
-const getProvider = (): FxProvider => {
+const getProviders = (priority: string[]): FxProvider[] => {
   const apiKey = process.env.TWELVE_DATA_API_KEY;
+  const providers = new Map<string, FxProvider>([
+    ["frankfurter", frankfurterProvider],
+    ["mock", mockProvider],
+  ]);
+
   if (apiKey && apiKey !== "replace-with-your-twelve-data-api-key") {
-    return new TwelveDataFxProvider(apiKey);
+    providers.set("twelve-data", new TwelveDataFxProvider(apiKey));
   }
 
-  return new MockFxProvider();
+  return priority
+    .map((providerName) => providers.get(providerName))
+    .filter((provider): provider is FxProvider => Boolean(provider));
 };
+
+const withProviderFallback = async <T>(
+  providers: FxProvider[],
+  action: (provider: FxProvider) => Promise<T>,
+  fallbackMessage: string,
+): Promise<T> => {
+  let lastError: unknown;
+
+  for (const provider of providers) {
+    try {
+      return await action(provider);
+    } catch (error) {
+      lastError = error;
+      console.warn(`${provider.name} FX request failed; trying next provider.`, error);
+    }
+  }
+
+  console.warn(fallbackMessage, lastError);
+  return action(mockProvider);
+};
+
 export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
   const cacheKey = `latest:${pairSymbol}`;
   const cached = cacheService.get<FxLatest>(cacheKey);
@@ -39,18 +71,11 @@ export const getLatestRate = async (pairSymbol: string): Promise<FxLatest> => {
     return cached;
   }
 
-  let latest: FxLatest;
-
-  try {
-    const provider = getProvider();
-    latest = await provider.getLatestRate(pairSymbol);
-  } catch (error) {
-    console.warn("Live latest FX request failed; falling back to mock provider.", error);
-    latest = {
-      ...(await mockProvider.getLatestRate(pairSymbol)),
-      source: "mock-fallback",
-    };
-  }
+  const latest = await withProviderFallback(
+    getProviders(latestProviderPriority()),
+    (provider) => provider.getLatestRate(pairSymbol),
+    "All latest FX providers failed; falling back to mock provider.",
+  );
 
   cacheService.set(cacheKey, latest, latestCacheTtlMs());
   return latest;
@@ -79,18 +104,11 @@ export const getHistoricalRates = async (
     return derivedHistory;
   }
 
-  let history: FxHistory;
-
-  try {
-    const provider = getProvider();
-    history = await provider.getHistoricalRates(pairSymbol, "1Y");
-  } catch (error) {
-    console.warn("Live historical FX request failed; falling back to mock provider.", error);
-    history = {
-      ...(await mockProvider.getHistoricalRates(pairSymbol, "1Y")),
-      source: "mock-fallback",
-    };
-  }
+  const history = await withProviderFallback(
+    getProviders(historyProviderPriority()),
+    (provider) => provider.getHistoricalRates(pairSymbol, "1Y"),
+    "All historical FX providers failed; falling back to mock provider.",
+  );
 
   cacheService.set(yearlyCacheKey, history, historyCacheTtlMs());
 

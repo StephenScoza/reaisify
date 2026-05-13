@@ -3,6 +3,12 @@ const toPositiveNumber = (value: string | undefined, fallback: number) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
+const toProviderPriority = (value: string | undefined, fallback: string[]) =>
+  (value ?? fallback.join(","))
+    .split(",")
+    .map((provider) => provider.trim().toLowerCase())
+    .filter(Boolean);
+
 export const latestCacheTtlMs = () =>
   toPositiveNumber(process.env.FX_LATEST_CACHE_TTL_MS, 15 * 60 * 1000);
 
@@ -23,3 +29,17 @@ export const fxCacheFileName = () =>
 
 export const providerUsageCacheTtlMs = () =>
   toPositiveNumber(process.env.PROVIDER_USAGE_CACHE_TTL_MS, 60 * 60 * 1000);
+
+export const latestProviderPriority = () =>
+  toProviderPriority(process.env.FX_LATEST_PROVIDER_PRIORITY, [
+    "twelve-data",
+    "frankfurter",
+    "mock",
+  ]);
+
+export const historyProviderPriority = () =>
+  toProviderPriority(process.env.FX_HISTORY_PROVIDER_PRIORITY, [
+    "frankfurter",
+    "twelve-data",
+    "mock",
+  ]);
