@@ -205,3 +205,5 @@ export const buildSignalFromSeries = (
 
   return buildSignalAssessment(points);
 };
+
+export const getFxCacheStatus = () => cacheService.getStatus();

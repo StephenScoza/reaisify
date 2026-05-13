@@ -113,6 +113,13 @@ export interface RuntimeLogEntry {
   [key: string]: unknown;
 }
 
+export interface CacheEntryStatus {
+  key: string;
+  expiresAt: string;
+  ttlSeconds: number;
+  isExpired: boolean;
+}
+
 export interface FxHistory {
   pair: CurrencyPair;
   points: FxPoint[];

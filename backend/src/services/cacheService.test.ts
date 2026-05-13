@@ -54,4 +54,28 @@ describe("CacheService", () => {
 
     expect(secondCache.get<{ points: number }>("history:usd-brl:30D")).toEqual({ points: 30 });
   });
+
+  it("reports cache entry TTL status", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+    const cache = new CacheService();
+
+    cache.set("history:usd-brl:7D", { points: 7 }, 120_000);
+    cache.set("latest:usd-brl", { rate: 5.12 }, 60_000);
+
+    expect(cache.getStatus()).toEqual([
+      {
+        key: "history:usd-brl:7D",
+        expiresAt: "2026-01-01T00:02:00.000Z",
+        ttlSeconds: 120,
+        isExpired: false,
+      },
+      {
+        key: "latest:usd-brl",
+        expiresAt: "2026-01-01T00:01:00.000Z",
+        ttlSeconds: 60,
+        isExpired: false,
+      },
+    ]);
+  });
 });

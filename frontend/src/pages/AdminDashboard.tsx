@@ -1,4 +1,5 @@
 import { AdminTools } from "../components/AdminTools";
+import { CacheStatusCard } from "../components/CacheStatusCard";
 import { DashboardFooter } from "../components/DashboardFooter";
 import { ProviderUsageCard } from "../components/ProviderUsageCard";
 import { RuntimeLogCard } from "../components/RuntimeLogCard";
@@ -34,6 +35,8 @@ export const AdminDashboard = () => (
         <ProviderUsageCard showRefreshAction />
         <AdminTools pairSymbol={pairSymbol} />
       </div>
+
+      <CacheStatusCard />
 
       <RuntimeLogCard />
 

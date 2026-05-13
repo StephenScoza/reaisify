@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getSystemStatus } from "../services/statusService.js";
 import { getProviderUsage, refreshTwelveDataUsage } from "../services/providerUsageService.js";
 import { getRecentLogLines } from "../services/logger.js";
+import { getFxCacheStatus } from "../services/fxService.js";
 
 export const statusRoutes = Router();
 
@@ -22,6 +23,12 @@ statusRoutes.get("/provider-usage", async (request, response) => {
       error: error instanceof Error ? error.message : "Failed to load provider usage.",
     });
   }
+});
+
+statusRoutes.get("/cache", (_request, response) => {
+  response.json({
+    data: getFxCacheStatus(),
+  });
 });
 
 statusRoutes.get("/logs", async (request, response) => {

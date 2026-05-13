@@ -7,6 +7,7 @@ import {
 import type {
   AlertDeliveryLog,
   AlertRule,
+  CacheEntryStatus,
   FxDashboardData,
   FxHistory,
   FxLatest,
@@ -174,6 +175,11 @@ export const refreshProviderUsage = async (): Promise<ProviderUsageSnapshot> => 
 
 export const getRuntimeLogs = async (limit = 50): Promise<RuntimeLogEntry[]> => {
   const payload = await fetchJson<{ data: RuntimeLogEntry[] }>(`/status/logs?limit=${limit}`);
+  return payload.data;
+};
+
+export const getCacheStatus = async (): Promise<CacheEntryStatus[]> => {
+  const payload = await fetchJson<{ data: CacheEntryStatus[] }>("/status/cache");
   return payload.data;
 };
 

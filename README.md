@@ -170,6 +170,10 @@ Returns the latest persisted provider credit snapshot. Twelve Data usage is capt
 
 Manually refreshes Twelve Data usage via the provider usage endpoint and caches the result for `PROVIDER_USAGE_CACHE_TTL_MS`. Use sparingly because Twelve Data counts this request against API credits.
 
+### `GET /status/cache`
+
+Returns active backend FX cache entries, their expiration timestamps, and remaining TTL. This is used by the admin console and does not call any external provider.
+
 ### `GET /fx/usd-brl/latest`
 
 Returns the latest proxied USD/BRL rate from Twelve Data when configured, otherwise the mock provider.

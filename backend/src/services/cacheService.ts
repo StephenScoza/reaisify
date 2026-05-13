@@ -6,6 +6,13 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
+export interface CacheEntryStatus {
+  key: string;
+  expiresAt: string;
+  ttlSeconds: number;
+  isExpired: boolean;
+}
+
 interface CacheServiceOptions {
   persist?: boolean;
   fileName?: string;
@@ -50,6 +57,19 @@ export class CacheService {
       expiresAt: Date.now() + ttlMs,
     });
     this.saveToDisk();
+  }
+
+  getStatus(): CacheEntryStatus[] {
+    const now = Date.now();
+
+    return Array.from(this.store.entries())
+      .map(([key, entry]) => ({
+        key,
+        expiresAt: new Date(entry.expiresAt).toISOString(),
+        ttlSeconds: Math.max(0, Math.round((entry.expiresAt - now) / 1_000)),
+        isExpired: entry.expiresAt <= now,
+      }))
+      .sort((a, b) => a.key.localeCompare(b.key));
   }
 
   private loadFromDisk() {
