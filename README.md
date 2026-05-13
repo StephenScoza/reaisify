@@ -42,7 +42,7 @@ currency-tracker/
 
 - Current USD to BRL rate card with daily change and percentage move
 - Historical chart with `7D`, `30D`, `90D`, and `1Y` ranges
-- Real-time USD to BRL conversion calculator
+- Real-time USD to BRL conversion calculator with estimated and custom transfer fee comparisons
 - Signal engine with recommendation, confidence, reasoning, percentile, and trend direction
 - Backend-managed alert rules with durable storage and Discord webhook support
 - Reusable pair-oriented architecture for future currency pairs like `usd-eur` and `usd-gbp`
@@ -56,6 +56,7 @@ currency-tracker/
 - `src/services/fxService.ts`: calls backend proxy endpoints for latest, history, and signal data
 - `src/hooks/useExchangeRates.ts`: fetches and filters pair data by time range
 - `src/utils/signalEngine.ts`: encapsulates timing analysis logic
+- `src/utils/transferFees.ts`: provider-agnostic transfer fee estimation rules
 - `src/components/*`: presentation-focused UI building blocks
 - `src/types/currency.ts`: pair-agnostic interfaces for series, snapshots, alerts, and signals
 
@@ -220,6 +221,14 @@ The service layer selects Twelve Data when `TWELVE_DATA_API_KEY` is present and 
 - Discord notifications fire when a rule crosses from below target to above target
 - If `DISCORD_WEBHOOK_URL` is unset, the backend still records the opportunity to the log file
 
+## Transfer Fee Estimates
+
+The converter includes configurable transfer provider presets for comparing estimated BRL received after fees. Current presets model fixed fees, percentage fees, and FX spread/markup separately for scenarios like Wise-style transfers, remittance apps, and bank wires.
+
+Users can also enter a custom percentage fee and fixed USD fee when they already know their provider's pricing. This makes the calculator useful for comparing a real quote against the preset scenarios.
+
+These are decision-support estimates, not live provider quotes. A future provider adapter can replace the presets with live Wise or other remittance quote APIs while keeping the UI contract intact.
+
 ## Mock Data Strategy
 
 Mock data is generated programmatically for 365 daily observations with:
@@ -236,6 +245,7 @@ This makes it easy to replace with live API data later while keeping the UI stab
 - Plug in live FX providers such as ExchangeRate.host, Open Exchange Rates, or Wise
 - Add multi-pair dashboards and portfolio views
 - Add scheduled transfer suggestions and recurring remittance planning
+- Integrate live remittance quotes from providers such as Wise for exact fee comparisons
 - Add push notifications, email alerts, or Discord/webhook delivery through a backend jobs system
 - Introduce Postgres for user data and alert persistence
 - Add Redis caching for FX responses and signal computations

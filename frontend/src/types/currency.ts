@@ -95,3 +95,27 @@ export interface FxDashboardData {
   signal: SignalAssessment;
   updatedAt: string;
 }
+
+export type TransferFeeModel = "PERCENTAGE_PLUS_FIXED" | "FLAT" | "BANK_SPREAD";
+
+export interface TransferFeeRule {
+  id: string;
+  providerName: string;
+  model: TransferFeeModel;
+  description: string;
+  fixedFeeUsd: number;
+  percentageFee: number;
+  exchangeRateMarkup: number;
+  estimatedDelivery: string;
+  isLiveQuote: boolean;
+}
+
+export interface TransferFeeEstimate {
+  rule: TransferFeeRule;
+  sendAmountUsd: number;
+  feeUsd: number;
+  effectiveRate: number;
+  netAmountUsd: number;
+  recipientAmountBrl: number;
+  totalCostUsd: number;
+}
