@@ -38,7 +38,7 @@ export const SystemStatusStrip = () => {
   ];
 
   return (
-    <section className="grid gap-3 rounded-2xl border border-white/10 bg-white/95 p-3 text-ink shadow-glow md:grid-cols-4">
+    <section className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-ink shadow-glow md:grid-cols-4">
       {items.map((item) => (
         <div key={item.label} className="rounded-xl border border-slate-200 bg-sand px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slatebrand">{item.label}</div>

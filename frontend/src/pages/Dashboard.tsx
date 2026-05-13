@@ -52,8 +52,8 @@ export const Dashboard = () => {
         <section className="space-y-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-ink md:text-white">Historical context</h2>
-              <p className="mt-1 text-sm text-slate-600 md:text-slate-300">Zoom between tactical and long-range windows before deciding on a transfer.</p>
+              <h2 className="text-2xl font-semibold text-ink">Historical context</h2>
+              <p className="mt-1 text-sm text-slate-600">Zoom between tactical and long-range windows before deciding on a transfer.</p>
             </div>
             <TimeRangeToggle activeRange={range} onChange={setRange} />
           </div>

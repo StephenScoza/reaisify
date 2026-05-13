@@ -103,12 +103,12 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
   };
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-slate-950/45 p-6 shadow-glow backdrop-blur">
+    <section className="rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Alert Rules</p>
-          <h3 className="mt-2 text-xl font-semibold text-white">Discord opportunity alerts</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slatebrand">Alert Rules</p>
+          <h3 className="mt-2 text-xl font-semibold text-ink">Discord opportunity alerts</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
             Persist target rules and send polished Discord messages when USD/BRL crosses your threshold.
           </p>
         </div>
@@ -130,12 +130,12 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
           value={targetRate}
           onChange={(event) => setTargetRate(event.target.value)}
           placeholder="Target rate, e.g. 5.40"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-mint/60"
+          className="w-full rounded-xl border border-slate-200 bg-sand px-4 py-3 text-ink outline-none transition placeholder:text-slate-400 focus:border-mint/60"
         />
         <button
           type="button"
           onClick={() => void addAlert()}
-          className="rounded-xl bg-white px-5 py-3 font-semibold text-slate-950 transition hover:bg-slate-100"
+          className="rounded-xl bg-ink px-5 py-3 font-semibold text-white transition hover:bg-ocean"
         >
           Add Alert
         </button>
@@ -149,24 +149,24 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
 
       <div className="mt-6 space-y-3">
         {isLoading ? (
-          <div className="rounded-xl border border-dashed border-white/10 px-4 py-5 text-sm text-slate-400">
+          <div className="rounded-xl border border-dashed border-slate-200 px-4 py-5 text-sm text-slate-500">
             Loading alert rules...
           </div>
         ) : alerts.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-white/10 px-4 py-5 text-sm text-slate-400">
+          <div className="rounded-xl border border-dashed border-slate-200 px-4 py-5 text-sm text-slate-500">
             No alert rules saved yet.
           </div>
         ) : (
           alerts.map((alert) => (
             <div
               key={alert.id}
-              className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-sand px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <div className="font-medium text-white">
+                <div className="font-semibold text-ink">
                   Notify when {pairSymbol.toUpperCase()} exceeds {alert.targetRate.toFixed(2)}
                 </div>
-                <div className="mt-1 text-sm text-slate-400">
+                <div className="mt-1 text-sm text-slate-500">
                   Last state: {alert.lastObservedState}
                   {alert.lastTriggeredAt
                     ? ` - Last sent ${new Date(alert.lastTriggeredAt).toLocaleString()}`
@@ -176,7 +176,7 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
               <button
                 type="button"
                 onClick={() => void removeAlert(alert.id)}
-                className="rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 transition hover:border-danger/40 hover:text-danger"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 transition hover:border-danger/40 hover:text-danger"
               >
                 Remove
               </button>
@@ -185,19 +185,19 @@ export const AlertRuleForm = ({ pairSymbol }: AlertRuleFormProps) => {
         )}
       </div>
 
-      <div className="mt-6 border-t border-white/10 pt-5">
-        <div className="mb-3 text-sm font-semibold text-white">Recent deliveries</div>
+      <div className="mt-6 border-t border-slate-200 pt-5">
+        <div className="mb-3 text-sm font-semibold text-ink">Recent deliveries</div>
         <div className="space-y-2">
           {deliveries.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-white/10 px-4 py-4 text-sm text-slate-400">
+            <div className="rounded-xl border border-dashed border-slate-200 px-4 py-4 text-sm text-slate-500">
               No delivery history yet.
             </div>
           ) : (
             deliveries.map((delivery) => (
-              <div key={delivery.id} className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+              <div key={delivery.id} className="rounded-xl border border-slate-200 bg-sand px-4 py-3">
                 <div className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
-                  <span className="font-medium text-white">{delivery.message}</span>
-                  <span className="text-slate-400">{new Date(delivery.deliveredAt).toLocaleString()}</span>
+                  <span className="font-medium text-ink">{delivery.message}</span>
+                  <span className="text-slate-500">{new Date(delivery.deliveredAt).toLocaleString()}</span>
                 </div>
                 <div className="mt-1 text-xs uppercase tracking-[0.16em] text-mint">
                   {delivery.destination} - {delivery.recommendation} - {delivery.confidence}%
