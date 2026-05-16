@@ -87,11 +87,12 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
               </span>
               <div className="text-sm font-semibold text-ink">Transfer fee estimates</div>
               <InfoPopover label="Explain transfer fee estimates" title="Fee estimate inputs">
-                Presets combine fixed fees, percentage fees, and FX spread assumptions. Use your own fee when you have a real quote.
+              Presets combine fixed fees, percentage fees, and FX spread assumptions. Use your own fee when you have a real quote.
               </InfoPopover>
             </div>
             <div className="mt-1 text-xs leading-5 text-slate-500">
-              Preset rules only. Provider fees and FX spreads can change before a real transfer quote.
+              {feeEstimates.length} estimate presets: {feeEstimates.map((estimate) => estimate.rule.providerName).join(", ")}.
+              Provider fees and FX spreads can change before a real transfer quote.
             </div>
           </div>
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slatebrand">
