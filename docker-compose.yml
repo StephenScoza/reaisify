@@ -23,8 +23,8 @@ services:
     environment:
       PORT: 7001
       ALERT_STORAGE_DIR: /app/runtime
-      FX_LATEST_PROVIDER_PRIORITY: twelve-data,frankfurter,mock
-      FX_HISTORY_PROVIDER_PRIORITY: frankfurter,twelve-data,mock
+      FX_LATEST_PROVIDER_PRIORITY: twelve-data,awesomeapi,fxapi-app,exchange-rate-api,currency-api,bcb-ptax,frankfurter,mock
+      FX_HISTORY_PROVIDER_PRIORITY: bcb-ptax,frankfurter,fxapi-app,twelve-data,awesomeapi,mock
       FX_LATEST_CACHE_TTL_MS: 900000
       FX_HISTORY_CACHE_TTL_MS: 86400000
       FX_CACHE_PERSISTENCE: "true"

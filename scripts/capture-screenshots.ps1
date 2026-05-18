@@ -18,6 +18,14 @@ if ($chromeCandidates.Count -eq 0) {
 
 $browser = $chromeCandidates[0]
 
+try {
+  Invoke-WebRequest -UseBasicParsing -TimeoutSec 15 -Uri "http://localhost:7001/health" | Out-Null
+  Invoke-WebRequest -UseBasicParsing -TimeoutSec 20 -Uri "http://localhost:7001/fx/usd-brl/latest" | Out-Null
+  Invoke-WebRequest -UseBasicParsing -TimeoutSec 20 -Uri "http://localhost:7001/fx/usd-brl/history?range=7D" | Out-Null
+} catch {
+  Write-Warning "Could not warm backend data before screenshots: $($_.Exception.Message)"
+}
+
 $captures = @(
   @{
     Name = "desktop"
