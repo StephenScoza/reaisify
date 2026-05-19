@@ -4,7 +4,7 @@ import { appendLogLine, readLogLines } from "./fileStore.js";
 
 const DELIVERY_LOG_FILE = "alert-deliveries.log";
 
-const buildChartUrl = (points: FxPoint[]) => {
+export const buildChartUrl = (points: FxPoint[]) => {
   const sampledPoints = points.slice(-30);
   const config = {
     type: "line",
@@ -56,7 +56,7 @@ const recommendationLabel = (signal: SignalAssessment) =>
       ? "Wait for a better window"
       : "Neutral timing";
 
-const buildDiscordPayload = (
+export const buildDiscordPayload = (
   alert: AlertRule,
   latest: FxLatest,
   signal: SignalAssessment,
