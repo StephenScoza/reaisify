@@ -3,6 +3,7 @@ import { formatPercent, formatRate, formatSignedNumber } from "../utils/formatte
 import { AnimatedNumber } from "./AnimatedNumber";
 import { Icon } from "./Icon";
 import { InfoPopover } from "./InfoPopover";
+import { ProviderFreshnessBadge } from "./ProviderFreshnessBadge";
 
 interface RateCardProps {
   snapshot: FxSnapshot;
@@ -17,7 +18,6 @@ const formatUpdatedAt = (value: string) =>
 
 export const RateCard = ({ snapshot, base, quote, source, updatedAt }: RateCardProps) => {
   const positive = snapshot.change.amount >= 0;
-  const isLive = !source.includes("mock") && !source.includes("derived");
 
   return (
     <section className="max-w-full overflow-visible rounded-2xl border border-slate-200 bg-white p-6 text-ink shadow-glow">
@@ -47,9 +47,7 @@ export const RateCard = ({ snapshot, base, quote, source, updatedAt }: RateCardP
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-        <span className={`rounded-full border px-3 py-1 ${isLive ? "border-mint/20 bg-surf text-mint" : "border-slate-200 bg-sand text-slatebrand"}`}>
-          {isLive ? "Live provider" : "Cached/mock provider"}
-        </span>
+        <ProviderFreshnessBadge source={source} />
         <span className="rounded-full border border-slate-200 bg-sand px-3 py-1 text-slatebrand">
           Updated {formatUpdatedAt(updatedAt)}
         </span>

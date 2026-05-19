@@ -12,6 +12,7 @@ import type { FxPoint } from "../types/currency";
 import { formatDate, formatRate } from "../utils/formatters";
 import { EmptyState } from "./EmptyState";
 import { Icon } from "./Icon";
+import { ProviderFreshnessBadge } from "./ProviderFreshnessBadge";
 
 interface ExchangeChartProps {
   points: FxPoint[];
@@ -45,9 +46,7 @@ export const ExchangeChart = ({ points, title = "USD/BRL rate path", source, upd
         <h3 className="mt-2 text-xl font-semibold text-ink">{title}</h3>
       </div>
       <div className="flex flex-wrap gap-2">
-        <div className="rounded-full border border-slate-200 bg-sand px-3 py-1 text-sm font-medium text-slate-600">
-          {source?.includes("derived") ? "Cached range" : "Provider range"}
-        </div>
+        <ProviderFreshnessBadge source={source} />
         <div className="rounded-full border border-slate-200 bg-sand px-3 py-1 text-sm font-medium text-slate-600">
           Updated {formatUpdatedAt(updatedAt)}
         </div>

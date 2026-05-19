@@ -148,13 +148,22 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
           </div>
         </div>
 
-        <div className="mt-4 space-y-3">
-          {feeEstimates.map((estimate, index) => (
-            <div
-              key={estimate.rule.id}
-              className="rounded-xl border border-slate-200 bg-white p-4"
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <div className="min-w-[720px]">
+            <div className="grid grid-cols-[1.55fr_1fr_0.8fr_0.8fr_1.05fr] gap-3 border-b border-slate-200 bg-sand px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-slatebrand">
+              <div>Provider</div>
+              <div className="text-right">BRL received</div>
+              <div className="text-right">Fee</div>
+              <div className="text-right">Rate</div>
+              <div>Delivery</div>
+            </div>
+
+            <div className="divide-y divide-slate-200">
+              {feeEstimates.map((estimate, index) => (
+                <div
+                  key={estimate.rule.id}
+                  className="grid grid-cols-[1.55fr_1fr_0.8fr_0.8fr_1.05fr] items-center gap-3 px-4 py-4 text-sm"
+                >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-ink">{estimate.rule.providerName}</span>
@@ -171,34 +180,26 @@ export const Converter = ({ pair, rate }: ConverterProps) => {
                   </div>
                   <p className="mt-1 text-xs leading-5 text-slate-500">{estimate.rule.description}</p>
                 </div>
-                <div className="shrink-0 text-left sm:text-right">
-                  <div className="text-lg font-bold text-ink">
-                    {formatCurrency(estimate.recipientAmountBrl, pair.quote, "pt-BR")}
-                  </div>
-                  <div className="text-xs text-slate-500">arrives after fees</div>
-                </div>
-              </div>
 
-              <div className="mt-4 grid gap-3 text-sm sm:grid-cols-4">
-                <div className="rounded-lg bg-sand px-3 py-2">
-                  <div className="text-xs text-slate-500">Fee</div>
-                  <div className="font-semibold text-ink">{formatCurrency(estimate.feeUsd, pair.base)}</div>
+                <div className="text-right">
+                  <span className="font-bold text-ink">{formatCurrency(estimate.recipientAmountBrl, pair.quote, "pt-BR")}</span>
                 </div>
-                <div className="rounded-lg bg-sand px-3 py-2">
-                  <div className="text-xs text-slate-500">Effective rate</div>
-                  <div className="font-semibold text-ink">{formatRate(estimate.effectiveRate)}</div>
+                <div className="text-right">
+                  <span className="font-semibold text-ink">{formatCurrency(estimate.feeUsd, pair.base)}</span>
                 </div>
-                <div className="rounded-lg bg-sand px-3 py-2">
-                  <div className="text-xs text-slate-500">FX spread</div>
-                  <div className="font-semibold text-ink">{formatSpread(estimate.rule.exchangeRateMarkup)}</div>
+                <div className="text-right">
+                  <span className="font-semibold text-ink">{formatRate(estimate.effectiveRate)}</span>
+                  <span className="block text-xs text-slate-500">
+                    {formatSpread(estimate.rule.exchangeRateMarkup)}
+                  </span>
                 </div>
-                <div className="rounded-lg bg-sand px-3 py-2">
-                  <div className="text-xs text-slate-500">Delivery</div>
-                  <div className="font-semibold text-ink">{estimate.rule.estimatedDelivery}</div>
+                <div>
+                  <span className="font-semibold text-ink">{estimate.rule.estimatedDelivery}</span>
                 </div>
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
